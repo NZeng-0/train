@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.android.train.databinding.FragmentHomeBinding;
+import com.google.android.material.tabs.TabLayout;
+
+import java.util.List;
 
 public class HomeFragment extends Fragment {
 
@@ -24,8 +27,6 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
