@@ -14,6 +14,7 @@ navigationUi = "2.8.8"
 
 [libraries]
 addresspicker = { module = "com.github.gzu-liyujiang.AndroidPicker:AddressPicker", version.ref = "addresspicker" }
+calendarpicker = { module = "com.github.gzu-liyujiang.AndroidPicker:CalendarPicker", version.ref = "addresspicker" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

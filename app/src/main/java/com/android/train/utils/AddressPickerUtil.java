@@ -27,12 +27,9 @@ public class AddressPickerUtil {
 
 
         // 监听地址选择事件
-        picker.setOnAddressPickedListener(new OnAddressPickedListener() {
-            @Override
-            public void onAddressPicked(ProvinceEntity province, CityEntity city, CountyEntity county) {
-                String selectedAddress = city.getName();
-                listener.onAddressSelected(selectedAddress);
-            }
+        picker.setOnAddressPickedListener((province, city, county) -> {
+            String selectedAddress = city.getName();
+            listener.onAddressSelected(selectedAddress);
         });
     }
 

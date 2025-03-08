@@ -1,20 +1,33 @@
 package com.android.train.ui.home;
 
+import android.app.Activity;
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.android.train.R;
+import com.github.gzuliyujiang.wheelpicker.DatePicker;
+import com.github.gzuliyujiang.wheelpicker.annotation.DateMode;
+import com.github.gzuliyujiang.wheelpicker.contract.OnDatePickedListener;
+import com.github.gzuliyujiang.wheelpicker.entity.DateEntity;
+import com.github.gzuliyujiang.wheelpicker.impl.UnitDateFormatter;
+import com.github.gzuliyujiang.wheelpicker.widget.DateWheelLayout;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Calendar;
 
 public class HomeViewModel extends ViewModel {
 
     private final MutableLiveData<String> departureCity = new MutableLiveData<>("北京");
     private final MutableLiveData<String> destinationCity = new MutableLiveData<>("上海");
-
+    private final MutableLiveData<String> selectedMonth = new MutableLiveData<>();
+    private final MutableLiveData<String> selectedDay = new MutableLiveData<>();
     public HomeViewModel() {
+        Calendar calendar = Calendar.getInstance();
+        int currentMonth = calendar.get(Calendar.MONTH) + 1;
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+        selectedMonth.setValue(String.valueOf(currentMonth));
+        selectedDay.setValue(String.valueOf(currentDay));
     }
     public void swapText() {
         // 获取当前文本
@@ -23,6 +36,47 @@ public class HomeViewModel extends ViewModel {
         // 交换文本
         departureCity.setValue(destinationCity.getValue());
         destinationCity.setValue(tempDestination);
+    }
+
+    public void showDatePicker(Context context, final OnDatePickedListener listener) {
+        DatePicker picker = new DatePicker((Activity) context);
+        picker.setBodyWidth(200);
+        DateWheelLayout wheelLayout = picker.getWheelLayout();
+
+        // 设置日期模式为 月日 选择
+        wheelLayout.setDateMode(DateMode.MONTH_DAY);
+        wheelLayout.setDateFormatter(new UnitDateFormatter());
+
+        // 获取当前日期
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+        int currentMonth = calendar.get(Calendar.MONTH) + 1;
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // 计算 15 天后的日期
+        calendar.add(Calendar.DAY_OF_MONTH, 15);
+        int maxYear = calendar.get(Calendar.YEAR);
+        int maxMonth = calendar.get(Calendar.MONTH) + 1;
+        int maxDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // 使用 new DateEntity() 设置范围
+        DateEntity minDate = DateEntity.target(currentYear, currentMonth, currentDay);
+        DateEntity maxDate = DateEntity.target(maxYear, maxMonth, maxDay);
+        wheelLayout.setRange(minDate, maxDate);
+
+        // 设置日期选择监听器
+        picker.setOnDatePickedListener(listener);
+
+        // 显示日期选择器
+        picker.show();
+    }
+
+    public LiveData<String> getSelectedMonth() {
+        return selectedMonth;
+    }
+
+    public LiveData<String> getSelectedDay() {
+        return selectedDay;
     }
 
     public LiveData<String> getDepartureCity() {

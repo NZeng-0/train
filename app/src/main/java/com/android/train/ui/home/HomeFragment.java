@@ -17,6 +17,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.android.train.R;
 import com.android.train.databinding.FragmentHomeBinding;
 import com.android.train.utils.AddressPickerUtil;
+import com.android.train.utils.DateUtils;
+import com.github.gzuliyujiang.wheelpicker.contract.OnDatePickedListener;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.List;
@@ -25,7 +27,7 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private HomeViewModel viewModel;
-    private TextView tvDeparture, tvDestination;
+    private TextView tvDeparture, tvDestination, date;
     private ImageView swap;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -36,17 +38,62 @@ public class HomeFragment extends Fragment {
         tvDeparture = binding.tvDeparture;
         tvDestination = binding.tvDestination;
         swap = binding.swap;
+        date = binding.date;
         View root = binding.getRoot();
         // 观察 LiveData，并更新 UI
-        viewModel.getDepartureCity().observe(getViewLifecycleOwner(), departure -> tvDeparture.setText(departure));
+        viewModel
+                .getDepartureCity()
+                .observe(getViewLifecycleOwner(), departure -> tvDeparture.setText(departure));
 
-        viewModel.getDestinationCity().observe(getViewLifecycleOwner(), destination -> tvDestination.setText(destination));
+        viewModel
+                .getDestinationCity()
+                .observe(getViewLifecycleOwner(), destination -> tvDestination.setText(destination));
 
         // 设置 swap 按钮点击事件
-        swap.setOnClickListener(v -> {
-            // 调用 ViewModel 中的方法交换文本
-            viewModel.swapText();
-        });
+        swap.setOnClickListener(v -> viewModel.swapText());
+
+        // 观察 selectedMonth 和 selectedDay
+        viewModel
+                .getSelectedMonth()
+                .observe(getViewLifecycleOwner(), month -> {
+                    // 更新月份
+                    int selectedMonth = month != null ? Integer.parseInt(month) : 0;
+                    int selectedDay = viewModel.getSelectedDay().getValue() != null
+                            ? Integer.parseInt(viewModel.getSelectedDay().getValue())
+                            : 0;
+
+                    // 使用工具类获取格式化后的日期文本
+                    String formattedDate = DateUtils
+                            .getFormattedDate(getContext(), selectedMonth, selectedDay);
+
+                    // 更新 TextView
+                    date.setText(formattedDate);
+                });
+
+        viewModel
+                .getSelectedDay()
+                .observe(getViewLifecycleOwner(), day -> {
+                    // 更新日期
+                    int selectedDay = day != null ? Integer.parseInt(day) : 0;
+                    int selectedMonth = viewModel.getSelectedMonth().getValue() != null
+                            ? Integer.parseInt(viewModel.getSelectedMonth().getValue())
+                            : 0;
+
+                    String formattedDate = DateUtils
+                            .getFormattedDate(getContext(), selectedMonth, selectedDay);
+
+                    date.setText(formattedDate);
+                });
+        // 月日选择
+        date.setOnClickListener(v -> viewModel.showDatePicker(getContext(),
+                (year, month, day) -> {
+                    // 使用工具类获取格式化后的日期文本
+                    String formattedDate = DateUtils.getFormattedDate(getContext(), month, day);
+
+                    // 更新 TextView
+                    date.setText(formattedDate);
+                }));
+
         return root;
     }
 
@@ -75,7 +122,6 @@ public class HomeFragment extends Fragment {
                 )
         );
     }
-
 
     @Override
     public void onDestroyView() {
