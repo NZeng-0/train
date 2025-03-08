@@ -1,4 +1,5 @@
 [versions]
+addresspicker = "4.1.14"
 agp = "8.8.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -12,6 +13,7 @@ navigationFragment = "2.8.8"
 navigationUi = "2.8.8"
 
 [libraries]
+addresspicker = { module = "com.github.gzu-liyujiang.AndroidPicker:AddressPicker", version.ref = "addresspicker" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
