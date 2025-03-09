@@ -139,6 +139,7 @@
             android:text="查询车票"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
+
     </LinearLayout>
 
     <!-- 快捷服务图标网格 -->
@@ -277,5 +278,6 @@
         app:itemIconTint="@color/bottom_nav_selector"
         app:itemTextColor="@color/bottom_nav_selector"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav_menu" />
 </androidx.constraintlayout.widget.ConstraintLayout>
