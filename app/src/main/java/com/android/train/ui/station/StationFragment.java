@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -19,13 +20,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -114,6 +118,24 @@ public class StationFragment extends Fragment {
         // 申请权限并获取定位
         requestLocationPermission();
 
+        binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (!TextUtils.isEmpty(query)) {
+                    viewModel.search(query); // 触发 ViewModel 进行搜索
+                }
+
+                hideKeyboard(binding.searchView); // 隐藏键盘
+                binding.searchView.clearFocus(); // 清除焦点，避免二次触发
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false; // 可选：可以在这里做**实时搜索**
+            }
+        });
+
         return root;
     }
 
@@ -127,12 +149,27 @@ public class StationFragment extends Fragment {
 
         // 绑定点击刷新位置事件
         tvRefreshLocation.setOnClickListener(v -> getCurrentLocation());
+        // 点击当前定位
+        tvCurrentLocation.setOnClickListener(v ->
+                ((StationActivity) requireActivity()).returnSelectedStation(
+                        (String) tvCurrentLocation.getText()));
     }
 
     private void loadData() {
         viewModel.getStationList().observe(getViewLifecycleOwner(), stations -> {
             stationAdapter.updateData(stations);
         });
+    }
+
+    /**
+     * 隐藏键盘
+     * @param view
+     */
+    private void hideKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     /**

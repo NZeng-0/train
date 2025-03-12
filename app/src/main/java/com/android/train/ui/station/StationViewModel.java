@@ -12,6 +12,7 @@ import com.android.train.pojo.StationInfo;
 import com.android.train.service.StationService;
 import com.android.train.utils.ApiResponse;
 
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -28,6 +29,7 @@ public class StationViewModel extends ViewModel {
     public StationViewModel(StationService stationService) {
         this.stationService = stationService;
     }
+
     public void loadStationList() {
         stationService.getStationList().enqueue(new Callback<>() {
             @Override
@@ -49,6 +51,29 @@ public class StationViewModel extends ViewModel {
             @Override
             public void onFailure(@NonNull Call<ApiResponse<List<StationInfo>>> call, @NonNull Throwable t) {
                 Log.e("HomeViewModel", "请求失败：" + t.getMessage());
+            }
+        });
+    }
+
+    public void search(String name) {
+        stationService.getStationByName(name).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(
+                    @NonNull Call<ApiResponse<List<StationInfo>>> call,
+                    @NonNull Response<ApiResponse<List<StationInfo>>> response
+            ) {
+                if (response.isSuccessful() && response.body() != null) {
+                    stationList.setValue(response.body().getRows());
+                } else {
+                    stationList.setValue(Collections.emptyList());
+                }
+            }
+
+            @Override
+            public void onFailure(
+                    @NonNull Call<ApiResponse<List<StationInfo>>> call,
+                    @NonNull Throwable t) {
+                stationList.setValue(Collections.emptyList());
             }
         });
     }
