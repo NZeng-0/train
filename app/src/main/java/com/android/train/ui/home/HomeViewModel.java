@@ -2,19 +2,13 @@ package com.android.train.ui.home;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.android.train.pojo.StationInfo;
-import com.android.train.service.StationService;
-import com.android.train.utils.ApiResponse;
 import com.android.train.utils.DateUtils;
-import com.android.train.utils.PreferenceUtils;
 import com.android.train.utils.To;
 import com.github.gzuliyujiang.wheelpicker.DatePicker;
 import com.github.gzuliyujiang.wheelpicker.annotation.DateMode;
@@ -23,11 +17,6 @@ import com.github.gzuliyujiang.wheelpicker.impl.UnitDateFormatter;
 import com.github.gzuliyujiang.wheelpicker.widget.DateWheelLayout;
 
 import java.util.Calendar;
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class HomeViewModel extends ViewModel {
 

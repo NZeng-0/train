@@ -4,19 +4,14 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.lifecycle.ViewModelProvider;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,14 +24,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.train.R;
-import com.android.train.databinding.FragmentHomeBinding;
 import com.android.train.databinding.FragmentProfileBinding;
-import com.android.train.utils.BlurUtils;
 import com.android.train.utils.To;
 
 import eightbitlab.com.blurview.BlurView;
-import eightbitlab.com.blurview.RenderEffectBlur;
-import eightbitlab.com.blurview.RenderScriptBlur;
 
 public class ProfileFragment extends Fragment {
 

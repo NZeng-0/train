@@ -3,6 +3,9 @@ package com.android.train.utils;
 import android.content.Context;
 import android.util.TypedValue;
 
+/**
+ * 类型装换工具栏
+ */
 public class To {
     public static int toInt(String value) {
         return Integer.parseInt(value);

@@ -2,6 +2,9 @@ package com.android.train.utils;
 
 import java.util.Calendar;
 
+/**
+ * 日期格式化工具栏
+ */
 public class DateUtils {
 
     // 获取日期的文本，今天、明天、后天或显示星期几

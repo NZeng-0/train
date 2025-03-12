@@ -3,6 +3,9 @@ package com.android.train.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+/**
+ * 数据持久化工具类
+ */
 public class PreferenceUtils {
     private static final String PREF_NAME = "StationPrefs";
 
