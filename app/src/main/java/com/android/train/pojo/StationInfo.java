@@ -110,4 +110,22 @@ public class StationInfo {
     }
 
     private int delFlag;
+
+    @Override
+    public String toString() {
+        return "StationInfo{" +
+                "createBy='" + createBy + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", updateBy='" + updateBy + '\'' +
+                ", updateTime='" + updateTime + '\'' +
+                ", remark='" + remark + '\'' +
+                ", id='" + id + '\'' +
+                ", code='" + code + '\'' +
+                ", name='" + name + '\'' +
+                ", spell='" + spell + '\'' +
+                ", region='" + region + '\'' +
+                ", regionName='" + regionName + '\'' +
+                ", delFlag=" + delFlag +
+                '}';
+    }
 }

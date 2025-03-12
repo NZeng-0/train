@@ -14,10 +14,10 @@ import com.android.train.pojo.StationInfo;
 import com.android.train.service.StationService;
 import com.android.train.utils.ApiResponse;
 import com.android.train.utils.DateUtils;
-import com.android.train.utils.TypeTo;
+import com.android.train.utils.PreferenceUtils;
+import com.android.train.utils.To;
 import com.github.gzuliyujiang.wheelpicker.DatePicker;
 import com.github.gzuliyujiang.wheelpicker.annotation.DateMode;
-import com.github.gzuliyujiang.wheelpicker.contract.OnDatePickedListener;
 import com.github.gzuliyujiang.wheelpicker.entity.DateEntity;
 import com.github.gzuliyujiang.wheelpicker.impl.UnitDateFormatter;
 import com.github.gzuliyujiang.wheelpicker.widget.DateWheelLayout;
@@ -31,19 +31,13 @@ import retrofit2.Response;
 
 public class HomeViewModel extends ViewModel {
 
-    private final MutableLiveData<String> departureCity = new MutableLiveData<>("北京");
-    private final MutableLiveData<String> destinationCity = new MutableLiveData<>("上海");
+    private final MutableLiveData<String> departureCity = new MutableLiveData<>();
+    private final MutableLiveData<String> destinationCity = new MutableLiveData<>();
     private final MutableLiveData<String> selectedMonth = new MutableLiveData<>();
     private final MutableLiveData<String> selectedDay = new MutableLiveData<>();
-    private final MutableLiveData<List<StationInfo>> stationList = new MutableLiveData<>();
-    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MediatorLiveData<String> formattedDate = new MediatorLiveData<>();
 
-    private final StationService stationService;
-
-    public HomeViewModel(StationService stationService) {
-        this.stationService = stationService;
-
+    public HomeViewModel() {
         // 初始化日期
         Calendar calendar = Calendar.getInstance();
         int currentMonth = calendar.get(Calendar.MONTH) + 1;
@@ -55,33 +49,6 @@ public class HomeViewModel extends ViewModel {
         formattedDate.addSource(selectedMonth, month -> updateFormattedDate());
         formattedDate.addSource(selectedDay, day -> updateFormattedDate());
     }
-
-    public void loadStationList() {
-        stationService.getStationList().enqueue(new Callback<>() {
-            @Override
-            public void onResponse(@NonNull Call<ApiResponse<List<StationInfo>>> call,
-                                   @NonNull Response<ApiResponse<List<StationInfo>>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<List<StationInfo>> apiResponse = response.body();
-                    if (apiResponse.getCode() == 200 && apiResponse.getRows() != null) {
-                        Log.d("HomeViewModel", "成功获取车站列表: " + apiResponse.getRows().toString() + " 个车站");
-                        stationList.setValue(apiResponse.getRows());
-                    } else {
-                        errorMessage.setValue("接口返回失败: " + apiResponse.getMsg());
-                    }
-                } else {
-                    errorMessage.setValue("加载车站列表失败");
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<ApiResponse<List<StationInfo>>> call, @NonNull Throwable t) {
-                Log.e("HomeViewModel", "请求失败：" + t.getMessage());
-                errorMessage.setValue("网络错误：" + t.getMessage());
-            }
-        });
-    }
-
 
     public void swapText() {
         String temp = departureCity.getValue();
@@ -95,8 +62,8 @@ public class HomeViewModel extends ViewModel {
         if (month != null && day != null) {
             // 格式化日期为 "MM月dd日"
             String formatted = DateUtils.getFormattedDate(
-                    TypeTo.toInt(selectedMonth.getValue()),
-                    TypeTo.toInt(selectedDay.getValue())
+                    To.toInt(selectedMonth.getValue()),
+                    To.toInt(selectedDay.getValue())
             );
             formattedDate.setValue(formatted);
         }
@@ -156,14 +123,6 @@ public class HomeViewModel extends ViewModel {
 
     public LiveData<String> getDestinationCity() {
         return destinationCity;
-    }
-
-    public LiveData<List<StationInfo>> getStationList() {
-        return stationList;
-    }
-
-    public LiveData<String> getErrorMessage() {
-        return errorMessage;
     }
 
     public void setDepartureCity(String city) {

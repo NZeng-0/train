@@ -32,6 +32,7 @@ import com.android.train.R;
 import com.android.train.databinding.FragmentHomeBinding;
 import com.android.train.databinding.FragmentProfileBinding;
 import com.android.train.utils.BlurUtils;
+import com.android.train.utils.To;
 
 import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.RenderEffectBlur;
@@ -67,7 +68,7 @@ public class ProfileFragment extends Fragment {
             Insets systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
 
             // 将 20dp 转换为 px
-            int paddingHorizontalPx = dpToPx(requireContext(), 20);
+            int paddingHorizontalPx = To.dpToPx(requireContext(), 20);
 
             // 让 header_layout 适配状态栏，并使用 dp 计算左右边距
             binding.headerLayout.setPadding(paddingHorizontalPx, systemBarsInsets.top, paddingHorizontalPx, 0);
@@ -113,13 +114,13 @@ public class ProfileFragment extends Fragment {
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.width = 0;
             params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            params.setMargins(dpToPx(requireContext(),5), dpToPx(requireContext(),5), dpToPx(requireContext(),5), dpToPx(requireContext(),5));
+            params.setMargins(To.dpToPx(requireContext(),5), To.dpToPx(requireContext(),5), To.dpToPx(requireContext(),5), To.dpToPx(requireContext(),5));
             params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f); // 设置权重填充
             itemLayout.setLayoutParams(params);
 
             // 创建 ImageView
             ImageView imageView = new ImageView(getContext());
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(dpToPx(requireContext(),32), dpToPx(requireContext(),32)));
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(To.dpToPx(requireContext(),32), To.dpToPx(requireContext(),32)));
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             imageView.setImageResource(icons[i]);
 
@@ -138,15 +139,6 @@ public class ProfileFragment extends Fragment {
             gridLayout.addView(itemLayout);
         }
 
-    }
-
-
-    private int dpToPx(Context context, int dp) {
-        return (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                dp,
-                context.getResources().getDisplayMetrics()
-        );
     }
 
     @Override

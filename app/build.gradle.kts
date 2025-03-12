@@ -52,4 +52,5 @@ dependencies {
     implementation(libs.blurview)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation(libs.play.services.location)
 }
