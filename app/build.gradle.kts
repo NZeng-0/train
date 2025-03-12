@@ -49,4 +49,7 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.addresspicker)
     implementation(libs.calendarpicker)
+    implementation(libs.blurview)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 }

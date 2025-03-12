@@ -1,12 +1,11 @@
 package com.android.train.utils;
 
-import android.content.Context;
 import java.util.Calendar;
 
 public class DateUtils {
 
     // 获取日期的文本，今天、明天、后天或显示星期几
-    public static String getFormattedDate(Context context, int selectedMonth, int selectedDay) {
+    public static String getFormattedDate(int selectedMonth, int selectedDay) {
         Calendar calendar = Calendar.getInstance();
         int currentMonth = calendar.get(Calendar.MONTH) + 1; // 月份从0开始，所以加1
         int currentDay = calendar.get(Calendar.DAY_OF_MONTH);

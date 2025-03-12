@@ -1,6 +1,7 @@
 package com.android.train.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,17 +12,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.android.train.R;
 import com.android.train.databinding.FragmentHomeBinding;
-import com.android.train.utils.AddressPickerUtil;
-import com.android.train.utils.DateUtils;
-import com.github.gzuliyujiang.wheelpicker.contract.OnDatePickedListener;
-import com.google.android.material.tabs.TabLayout;
+import com.android.train.pojo.StationInfo;
+import com.android.train.service.StationService;
 
 import java.util.List;
+
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HomeFragment extends Fragment {
 
@@ -30,71 +31,71 @@ public class HomeFragment extends Fragment {
     private TextView tvDeparture, tvDestination, date;
     private ImageView swap;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState) {
+
+        // 初始化 Retrofit
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.128.83.81:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        StationService stationService = retrofit.create(StationService.class);
+
+        // 使用 Factory 创建 ViewModel
+        viewModel = new ViewModelProvider(this, new HomeViewModelFactory(stationService))
+                .get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         tvDeparture = binding.tvDeparture;
         tvDestination = binding.tvDestination;
         swap = binding.swap;
         date = binding.date;
-        View root = binding.getRoot();
-        // 观察 LiveData，并更新 UI
-        viewModel
-                .getDepartureCity()
-                .observe(getViewLifecycleOwner(), departure -> tvDeparture.setText(departure));
 
-        viewModel
-                .getDestinationCity()
-                .observe(getViewLifecycleOwner(), destination -> tvDestination.setText(destination));
+        View root = binding.getRoot();
+
+        // 观察 LiveData，并更新 UI
+        observeViewModel();
 
         // 设置 swap 按钮点击事件
         swap.setOnClickListener(v -> viewModel.swapText());
 
-        // 观察 selectedMonth 和 selectedDay
-        viewModel
-                .getSelectedMonth()
-                .observe(getViewLifecycleOwner(), month -> {
-                    // 更新月份
-                    int selectedMonth = month != null ? Integer.parseInt(month) : 0;
-                    int selectedDay = viewModel.getSelectedDay().getValue() != null
-                            ? Integer.parseInt(viewModel.getSelectedDay().getValue())
-                            : 0;
-
-                    // 使用工具类获取格式化后的日期文本
-                    String formattedDate = DateUtils
-                            .getFormattedDate(getContext(), selectedMonth, selectedDay);
-
-                    // 更新 TextView
-                    date.setText(formattedDate);
-                });
-
-        viewModel
-                .getSelectedDay()
-                .observe(getViewLifecycleOwner(), day -> {
-                    // 更新日期
-                    int selectedDay = day != null ? Integer.parseInt(day) : 0;
-                    int selectedMonth = viewModel.getSelectedMonth().getValue() != null
-                            ? Integer.parseInt(viewModel.getSelectedMonth().getValue())
-                            : 0;
-
-                    String formattedDate = DateUtils
-                            .getFormattedDate(getContext(), selectedMonth, selectedDay);
-
-                    date.setText(formattedDate);
-                });
         // 月日选择
-        date.setOnClickListener(v -> viewModel.showDatePicker(getContext(),
-                (year, month, day) -> {
-                    // 使用工具类获取格式化后的日期文本
-                    String formattedDate = DateUtils.getFormattedDate(getContext(), month, day);
-
-                    // 更新 TextView
-                    date.setText(formattedDate);
-                }));
+        date.setOnClickListener(v -> viewModel.showDatePicker(getContext()));
 
         return root;
+    }
+
+    private void observeViewModel() {
+        // 观察出发地
+        viewModel.getDepartureCity().observe(getViewLifecycleOwner(), departure ->
+                tvDeparture.setText(departure));
+
+        // 观察目的地
+        viewModel.getDestinationCity().observe(getViewLifecycleOwner(), destination ->
+                tvDestination.setText(destination));
+
+        // 观察日期
+        viewModel.getFormattedDate().observe(getViewLifecycleOwner(), formattedDate ->
+                date.setText(formattedDate));
+
+        // 观察车站列表
+        viewModel.getStationList().observe(getViewLifecycleOwner(), stationList -> {
+            if (stationList != null && !stationList.isEmpty()) {
+                Log.d("HomeFragment", "车站数据已更新，数量: " + stationList.size());
+            } else {
+                Log.e("HomeFragment", "车站列表为空或加载失败");
+            }
+        });
+
+        // 观察错误信息
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            if (error != null) {
+                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -108,19 +109,18 @@ public class HomeFragment extends Fragment {
         viewModel.getDepartureCity().observe(getViewLifecycleOwner(), tvDeparture::setText);
         viewModel.getDestinationCity().observe(getViewLifecycleOwner(), tvDestination::setText);
 
+        viewModel.loadStationList();
+
         // 点击选择出发地
-        tvDeparture.setOnClickListener(v ->
-                AddressPickerUtil.showAddressPicker(requireContext(), address ->
-                        viewModel.setDepartureCity(address)
-                )
-        );
+        tvDeparture.setOnClickListener(v -> {
+            List<StationInfo> stationList = viewModel.getStationList().getValue();
+        });
+
 
         // 点击选择目的地
-        tvDestination.setOnClickListener(v ->
-                AddressPickerUtil.showAddressPicker(requireContext(), address ->
-                        viewModel.setDestinationCity(address)
-                )
-        );
+        tvDestination.setOnClickListener(v -> {
+            List<StationInfo> stationList = viewModel.getStationList().getValue();
+        });
     }
 
     @Override
