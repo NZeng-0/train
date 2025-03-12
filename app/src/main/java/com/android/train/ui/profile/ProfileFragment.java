@@ -5,7 +5,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -25,6 +27,7 @@ import android.widget.TextView;
 
 import com.android.train.R;
 import com.android.train.databinding.FragmentProfileBinding;
+import com.android.train.ui.login.LoginActivity;
 import com.android.train.utils.To;
 
 import eightbitlab.com.blurview.BlurView;
@@ -34,6 +37,8 @@ public class ProfileFragment extends Fragment {
     private LinearLayout header_layout;
     private ProfileViewModel mViewModel;
     private FragmentProfileBinding binding;
+    private ImageView avatar;
+    private TextView username, description;
 
     public static ProfileFragment newInstance() {
         return new ProfileFragment();
@@ -67,6 +72,7 @@ public class ProfileFragment extends Fragment {
             return insets;
         });
 
+        // 动态模糊
         float radius = 20f;
 
         View decorView = window.getDecorView();
@@ -79,7 +85,25 @@ public class ProfileFragment extends Fragment {
                 .setBlurRadius(radius)
                 .setBlurAutoUpdate(true);
         initServiceList();
+
+        goFragment();
+
         return root;
+    }
+
+    private void goFragment() {
+        avatar = binding.profileImage;
+        username = binding.tvUsername;
+        description = binding.tvDescription;
+
+        avatar.setOnClickListener(v-> toLogin());
+        username.setOnClickListener(v-> toLogin());
+        description.setOnClickListener(v-> toLogin());
+    }
+
+    private void toLogin(){
+        Intent intent = new Intent(requireContext(), LoginActivity.class);
+        startActivity(intent);
     }
 
     private void initServiceList(){
