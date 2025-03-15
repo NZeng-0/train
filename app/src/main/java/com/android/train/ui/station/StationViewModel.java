@@ -8,8 +8,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.android.train.pojo.StationInfo;
-import com.android.train.service.StationService;
-import com.android.train.utils.ApiResponse;
+import com.android.train.api.service.StationService;
+import com.android.train.api.ApiResponse;
 
 import java.util.Collections;
 import java.util.List;

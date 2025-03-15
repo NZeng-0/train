@@ -1,7 +1,7 @@
-package com.android.train.service;
+package com.android.train.api.service;
 
 import com.android.train.pojo.StationInfo;
-import com.android.train.utils.ApiResponse;
+import com.android.train.api.ApiResponse;
 
 import java.util.List;
 

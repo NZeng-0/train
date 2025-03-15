@@ -35,8 +35,9 @@ import android.widget.Toast;
 
 import com.android.train.R;
 import com.android.train.adapter.StationAdapter;
+import com.android.train.api.RetrofitClient;
 import com.android.train.databinding.FragmentStationBinding;
-import com.android.train.service.StationService;
+import com.android.train.api.service.StationService;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
@@ -67,10 +68,7 @@ public class StationFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         // 初始化 Retrofit
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.161.220:8080/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        Retrofit retrofit = RetrofitClient.getClient();
 
         StationService stationService = retrofit.create(StationService.class);
 
@@ -136,6 +134,8 @@ public class StationFragment extends Fragment {
             }
         });
 
+        Toolbar toolbar = binding.toolbar;
+        toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
         return root;
     }
 

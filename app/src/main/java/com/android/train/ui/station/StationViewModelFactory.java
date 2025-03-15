@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.android.train.service.StationService;
+import com.android.train.api.service.StationService;
 
 public class StationViewModelFactory implements ViewModelProvider.Factory {
     private final StationService stationService;

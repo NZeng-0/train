@@ -1,4 +1,4 @@
-package com.android.train.utils;
+package com.android.train.api;
 
 public class ApiResponse<T> {
     private int code;
