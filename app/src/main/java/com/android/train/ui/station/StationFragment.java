@@ -68,7 +68,7 @@ public class StationFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         // 初始化 Retrofit
-        Retrofit retrofit = RetrofitClient.getClient();
+        Retrofit retrofit = RetrofitClient.getClient(requireContext());
 
         StationService stationService = retrofit.create(StationService.class);
 

@@ -1,18 +1,24 @@
 package com.android.train.ui.register;
 
 
+import static android.content.Context.MODE_PRIVATE;
+
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,14 +27,22 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import com.android.train.MainActivity;
+import com.android.train.R;
 import com.android.train.api.RetrofitClient;
 import com.android.train.api.service.StationService;
 import com.android.train.api.service.UserService;
 import com.android.train.databinding.FragmentRegisterBinding;
 import com.android.train.model.UserRequest;
+import com.android.train.repository.AuthRepository;
+import com.android.train.ui.login.LoginViewModel;
 import com.android.train.ui.station.StationViewModel;
 import com.android.train.ui.station.StationViewModelFactory;
+import com.android.train.utils.PreferencesUtil;
 import com.android.train.utils.ToastUtil;
+import com.android.train.viewmodel.AuthViewModel;
+import com.android.train.viewmodel.AuthViewModelFactory;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +52,7 @@ import retrofit2.Retrofit;
 public class RegisterFragment extends Fragment {
 
     private RegisterViewModel viewModel;
+    private AuthViewModel authViewModel;
 
     private FragmentRegisterBinding binding;
 
@@ -50,14 +65,17 @@ public class RegisterFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO: Use the ViewModel
-        Retrofit retrofit = RetrofitClient.getClient();
 
-        UserService stationService = retrofit.create(UserService.class);
+        Retrofit retrofit = RetrofitClient.getClient(requireContext());
 
-        // 使用 ViewModelFactory
-        RegisterViewModelFactory factory = new RegisterViewModelFactory(stationService);
-        viewModel = new ViewModelProvider(this, factory).get(RegisterViewModel.class);
+        UserService userService = retrofit.create(UserService.class);
+        // 创建 Repository
+        AuthRepository authRepository = new AuthRepository(userService);
+        // 通过 Factory 创建 ViewModel
+        AuthViewModelFactory factory = new AuthViewModelFactory(authRepository);
+        authViewModel = new ViewModelProvider(this, factory).get(AuthViewModel.class);
+
+        viewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
     }
 
     @Nullable
@@ -76,17 +94,14 @@ public class RegisterFragment extends Fragment {
             return insets;
         });
 
+        // 返回
         Toolbar toolbar = binding.toolbar;
         toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
 
         initSpinner();
 
-        // 观察注册结果
-        viewModel.registerResult.observe(getViewLifecycleOwner(), isSuccess -> ToastUtil
-                .showToast(requireActivity(), viewModel.getMsg()));
-
         binding.btnNext.setOnClickListener(v -> collectFormData());
-
+        observeData();
         return root;
     }
 
@@ -118,6 +133,38 @@ public class RegisterFragment extends Fragment {
         });
     }
 
+    private void observeData() {
+        // 监听消息
+        authViewModel.getMessage().observe(getViewLifecycleOwner(), msg ->
+                ToastUtil.showToast(requireContext(),msg));
+
+        // 监听 token
+        authViewModel.getToken().observe(getViewLifecycleOwner(), token -> {
+            if (token != null) {
+                // 这里可以存储 Token
+                SharedPreferences sharedPreferences = requireContext()
+                        .getSharedPreferences("app_prefs", MODE_PRIVATE);
+                sharedPreferences.edit().putString("token", token).apply();
+            }
+        });
+        authViewModel.getNavigateLiveData().observe(getViewLifecycleOwner(), navigate -> {
+            if (navigate) {
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_view);
+                navController.navigate(R.id.navigation_profile);
+            }
+        });
+        authViewModel.getUserLiveData().observe(getViewLifecycleOwner(), user -> {
+            if(user != null){
+                Log.d("SharedPreferences", "保存用户信息: " + user.getRealName());
+                PreferencesUtil.putString(requireContext(),"username", user.getRealName());
+                PreferencesUtil.putString(requireContext(),"id", user.getId());
+                PreferencesUtil.putString(requireContext(),"phone", user.getPhone());
+                PreferencesUtil.putString(requireContext(),"email", user.getMail());
+                PreferencesUtil.putBoolean(requireContext(),"isLogin", true);
+            }
+        });
+    }
+
     private void collectFormData() {
         String username = binding.etUsername.getText().toString().trim();
         String password = binding.etPassword.getText().toString();
@@ -135,7 +182,7 @@ public class RegisterFragment extends Fragment {
                 phone,
                 email
         );
-        viewModel.register(userRequest);
+        authViewModel.registerAndLogin(userRequest);
     }
 
     private boolean validateForm() {

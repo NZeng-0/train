@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ import android.widget.TextView;
 import com.android.train.R;
 import com.android.train.databinding.FragmentProfileBinding;
 import com.android.train.ui.login.LoginActivity;
+import com.android.train.utils.PreferencesUtil;
 import com.android.train.utils.To;
 
 import eightbitlab.com.blurview.BlurView;
@@ -52,7 +54,28 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         header_layout = binding.headerLayout;
+        adapter(root);
 
+        initData();
+        initServiceList();
+
+        goFragment();
+
+        return root;
+    }
+
+    private void initData() {
+        avatar = binding.profileImage;
+        username = binding.tvUsername;
+        description = binding.tvDescription;
+
+        username.setText(PreferencesUtil.getString(requireContext(), "username", "未登录"));
+        description.setText(PreferencesUtil.getString(requireContext(), "phone", "便捷出行就在12306"));
+        Log.d("SharedPreferences", "username = " + PreferencesUtil.getString(requireContext(), "username", "未登录"));
+        Log.d("SharedPreferences", "phone = " + PreferencesUtil.getString(requireContext(), "phone", "便捷出行就在12306"));
+    }
+
+    private void adapter(View root) {
         // 修改状态栏颜色，确保它不是透明的
         Window window = requireActivity().getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -84,29 +107,26 @@ public class ProfileFragment extends Fragment {
                 .setFrameClearDrawable(windowBackground)
                 .setBlurRadius(radius)
                 .setBlurAutoUpdate(true);
-        initServiceList();
-
-        goFragment();
-
-        return root;
     }
 
     private void goFragment() {
-        avatar = binding.profileImage;
-        username = binding.tvUsername;
-        description = binding.tvDescription;
-
-        avatar.setOnClickListener(v-> toLogin());
-        username.setOnClickListener(v-> toLogin());
-        description.setOnClickListener(v-> toLogin());
+        boolean isLogin = PreferencesUtil.getBoolean(requireContext(), "isLogin", false);
+        if (isLogin) {
+            avatar.setOnClickListener(v -> {});
+            username.setOnClickListener(v -> {});
+        } else {
+            avatar.setOnClickListener(v -> toLogin());
+            username.setOnClickListener(v -> toLogin());
+            description.setOnClickListener(v -> toLogin());
+        }
     }
 
-    private void toLogin(){
+    private void toLogin() {
         Intent intent = new Intent(requireContext(), LoginActivity.class);
         startActivity(intent);
     }
 
-    private void initServiceList(){
+    private void initServiceList() {
         GridLayout gridLayout = binding.serviceList;
         gridLayout.setColumnCount(4); // 设置列数
 
@@ -129,13 +149,13 @@ public class ProfileFragment extends Fragment {
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.width = 0;
             params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            params.setMargins(To.dpToPx(requireContext(),5), To.dpToPx(requireContext(),5), To.dpToPx(requireContext(),5), To.dpToPx(requireContext(),5));
+            params.setMargins(To.dpToPx(requireContext(), 5), To.dpToPx(requireContext(), 5), To.dpToPx(requireContext(), 5), To.dpToPx(requireContext(), 5));
             params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f); // 设置权重填充
             itemLayout.setLayoutParams(params);
 
             // 创建 ImageView
             ImageView imageView = new ImageView(getContext());
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(To.dpToPx(requireContext(),32), To.dpToPx(requireContext(),32)));
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(To.dpToPx(requireContext(), 32), To.dpToPx(requireContext(), 32)));
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             imageView.setImageResource(icons[i]);
 

@@ -24,6 +24,7 @@ public class UserRequest {
     @SerializedName("mail")
     private String mail;
 
+
     // 构造方法
     public UserRequest(String username, String password, String realName, Integer idType, String idCard, String phone, String mail) {
         this.username = username;
@@ -33,6 +34,10 @@ public class UserRequest {
         this.idCard = idCard;
         this.phone = phone;
         this.mail = mail;
+    }
+    public UserRequest(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
     // Getter 和 Setter 方法
