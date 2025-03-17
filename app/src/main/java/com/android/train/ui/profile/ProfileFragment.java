@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 import com.android.train.R;
 import com.android.train.databinding.FragmentProfileBinding;
+import com.android.train.ui.account.AccountActivity;
 import com.android.train.ui.login.LoginActivity;
 import com.android.train.utils.PreferencesUtil;
 import com.android.train.utils.To;
@@ -71,8 +72,6 @@ public class ProfileFragment extends Fragment {
 
         username.setText(PreferencesUtil.getString(requireContext(), "username", "未登录"));
         description.setText(PreferencesUtil.getString(requireContext(), "phone", "便捷出行就在12306"));
-        Log.d("SharedPreferences", "username = " + PreferencesUtil.getString(requireContext(), "username", "未登录"));
-        Log.d("SharedPreferences", "phone = " + PreferencesUtil.getString(requireContext(), "phone", "便捷出行就在12306"));
     }
 
     private void adapter(View root) {
@@ -112,8 +111,9 @@ public class ProfileFragment extends Fragment {
     private void goFragment() {
         boolean isLogin = PreferencesUtil.getBoolean(requireContext(), "isLogin", false);
         if (isLogin) {
-            avatar.setOnClickListener(v -> {});
-            username.setOnClickListener(v -> {});
+            avatar.setOnClickListener(v -> toAccount());
+            username.setOnClickListener(v -> toAccount());
+            description.setOnClickListener(v -> toAccount());
         } else {
             avatar.setOnClickListener(v -> toLogin());
             username.setOnClickListener(v -> toLogin());
@@ -125,7 +125,10 @@ public class ProfileFragment extends Fragment {
         Intent intent = new Intent(requireContext(), LoginActivity.class);
         startActivity(intent);
     }
-
+    private void toAccount() {
+        Intent intent = new Intent(requireContext(), AccountActivity.class);
+        startActivity(intent);
+    }
     private void initServiceList() {
         GridLayout gridLayout = binding.serviceList;
         gridLayout.setColumnCount(4); // 设置列数
