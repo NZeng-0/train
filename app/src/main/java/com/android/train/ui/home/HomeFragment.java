@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.android.train.R;
 import com.android.train.databinding.FragmentHomeBinding;
+import com.android.train.ui.query.QueryActivity;
 import com.android.train.ui.station.StationActivity;
 import com.android.train.utils.PreferenceUtils;
 
@@ -77,6 +78,12 @@ public class HomeFragment extends Fragment {
                 new ActivityResultContracts.StartActivityForResult(),
                 this::handelResult
         );
+
+        // 查询车次
+        binding.btnSearch.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), QueryActivity.class);
+            startActivity(intent);
+        });
 
         return root;
     }

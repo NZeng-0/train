@@ -56,7 +56,6 @@ public class StationFragment extends Fragment {
     private RecyclerView recyclerViewStations;
     private TextView tvCurrentLocation, tvRefreshLocation;
     private StationAdapter stationAdapter;
-    private Toolbar toolbar;
     private FusedLocationProviderClient fusedLocationClient;
 
     public static StationFragment newInstance() {
@@ -101,12 +100,10 @@ public class StationFragment extends Fragment {
         viewModel.loadStationList();
         loadData();
 
-        toolbar = binding.toolbar;
-
         // 适配刘海屏 & 状态栏安全区域
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            binding.toolbar.setPadding(20, systemBarsInsets.top, 20, 0);
+            binding.toolbar.setPadding(16, systemBarsInsets.top, 16, 0);
             return insets;
         });
 
@@ -148,7 +145,10 @@ public class StationFragment extends Fragment {
         recyclerViewStations.setAdapter(stationAdapter);
 
         // 绑定点击刷新位置事件
-        tvRefreshLocation.setOnClickListener(v -> getCurrentLocation());
+        tvRefreshLocation.setOnClickListener(v -> {
+            Log.e("addr", "点击了");
+            getCurrentLocation();
+        });
         // 点击当前定位
         tvCurrentLocation.setOnClickListener(v ->
                 ((StationActivity) requireActivity()).returnSelectedStation(
@@ -163,6 +163,7 @@ public class StationFragment extends Fragment {
 
     /**
      * 隐藏键盘
+     *
      * @param view
      */
     private void hideKeyboard(View view) {
@@ -189,18 +190,19 @@ public class StationFragment extends Fragment {
      * 获取当前位置
      */
     private void getCurrentLocation() {
+        Log.e("addr", "进入了");
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             Log.e("addr", "没有定位权限！");
             return;
         }
-
-
+        Log.e("addr", "定位中");
         fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
             if (location != null) {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
                 String address = getAddress(latitude, longitude);
+                Log.e("addr", address);
                 tvCurrentLocation.setText(address);
             } else {
                 tvCurrentLocation.setText("无法获取位置信息");
