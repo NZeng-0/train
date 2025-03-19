@@ -1,6 +1,7 @@
 package com.android.train.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.train.R;
 import com.android.train.model.TrainModel;
+import com.android.train.ui.booking.BookingActivity;
 
 import java.util.List;
 
@@ -58,10 +60,18 @@ public class TrainAdapter extends RecyclerView.Adapter<TrainAdapter.TrainViewHol
 
         // Set click listener for the entire item
         holder.itemView.setOnClickListener(v -> {
-            String trainInfo = train.getTrainNumber() + " " +
-                    train.getDepartureStation() + " → " +
-                    train.getArrivalStation();
-            Toast.makeText(context, "选择了列车: " + trainInfo, Toast.LENGTH_SHORT).show();
+            int adapterPosition = holder.getAdapterPosition();
+            if (adapterPosition == RecyclerView.NO_POSITION) return;
+
+            Intent intent = new Intent(context, BookingActivity.class);
+            intent.putExtra("trainNumber", train.getTrainNumber());
+            intent.putExtra("departureStation", train.getDepartureStation());
+            intent.putExtra("arrivalStation", train.getArrivalStation());
+            intent.putExtra("departureTime", train.getDepartureTime());
+            intent.putExtra("arrivalTime", train.getArrivalTime());
+            intent.putExtra("durationTime", train.getDuration());
+
+            context.startActivity(intent);
         });
     }
 

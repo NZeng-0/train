@@ -1,5 +1,6 @@
 package com.android.train.ui.query;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -56,6 +57,10 @@ public class QueryFragment extends Fragment {
             return insets;
         });
 
+        // 返回
+        Toolbar toolbar = binding.toolbar;
+        toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
+
         initDate();
 
         setupTrainList();
@@ -93,5 +98,4 @@ public class QueryFragment extends Fragment {
         trainListView.setLayoutManager(new LinearLayoutManager(requireContext()));
         trainListView.setAdapter(trainAdapter);
     }
-
 }

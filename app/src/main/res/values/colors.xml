@@ -10,4 +10,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="colorOverlay">#78ffffff</color>
+    <color name="selected_seat">#FF9000</color>
+    <color name="un_selected_seat">#999999</color>
 </resources>
