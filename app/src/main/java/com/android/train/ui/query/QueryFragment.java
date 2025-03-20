@@ -4,7 +4,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
@@ -19,25 +18,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ViewSwitcher;
 
-import com.android.train.R;
 import com.android.train.adapter.DateAdapter;
 import com.android.train.adapter.TrainAdapter;
 import com.android.train.api.RetrofitClient;
 import com.android.train.api.service.RelationService;
-import com.android.train.api.service.StationService;
-import com.android.train.api.service.UserService;
 import com.android.train.databinding.FragmentQueryBinding;
-import com.android.train.databinding.FragmentStationBinding;
 import com.android.train.model.DateItem;
 import com.android.train.model.TrainModel;
-import com.android.train.pojo.StationInfo;
-import com.android.train.ui.station.StationViewModel;
-import com.android.train.ui.station.StationViewModelFactory;
 import com.android.train.utils.PreferencesUtil;
-import com.android.train.viewmodel.AuthViewModel;
+import com.android.train.viewmodel.UtilViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Retrofit;
@@ -47,6 +40,14 @@ public class QueryFragment extends Fragment {
     private QueryViewModel viewModel;
     private FragmentQueryBinding binding;
     private TrainAdapter trainAdapter;
+    private ImageView noDataImage;
+    private ViewSwitcher viewSwitcher;
+    private RecyclerView trainListView;
+    private UtilViewModel utilViewModel;
+    private String saleTime;
+    private  int page = 1;
+    private int size = 20;
+    private String start, end;
 
     public static QueryFragment newInstance() {
         return new QueryFragment();
@@ -61,6 +62,7 @@ public class QueryFragment extends Fragment {
         RelationService relationService = retrofit.create(RelationService.class);
         QueryViewModelFactory factory = new QueryViewModelFactory(relationService);
         viewModel = new ViewModelProvider(this, factory).get(QueryViewModel.class);
+        utilViewModel = new ViewModelProvider(this).get(UtilViewModel.class);
     }
 
     @Nullable
@@ -79,29 +81,61 @@ public class QueryFragment extends Fragment {
         Toolbar toolbar = binding.toolbar;
         toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
 
+        noDataImage = binding.noDataImage;
+        viewSwitcher = binding.viewSwitcher;
+        trainListView = binding.trainList;
+
+        String saveStart = PreferencesUtil.getString(requireContext(), "departureCity");
+        String saveEnd = PreferencesUtil.getString(requireContext(), "destinationCity");
+        start = saveStart;
+        end = saveEnd;
+        if (saveStart == null) start = "北京";
+        if (saveEnd == null) end = "上海";
+
         initDate();
 
         Intent intent = requireActivity().getIntent();
-        String departure = intent.getStringExtra("departure");
-        String destination = intent.getStringExtra("destination");
-        String saleTime = intent.getStringExtra("saleTime");
-        int page = 1; // 页码，默认为 1
-        int size = 20;
+        saleTime = intent.getStringExtra("saleTime");
 
-        viewModel.loadStationList(page, size, departure, destination, saleTime);
+        viewModel.loadStationList(page, size, start, end, saleTime);
 
         observe();
 
         return root;
     }
 
-    private void observe(){
+    private void observe() {
+
         viewModel.getTrainModels().observe(getViewLifecycleOwner(), models -> {
-            if (trainAdapter != null) {
-                trainAdapter.updateData(models);
+            if (models.isEmpty()) {
+                if (viewSwitcher.getCurrentView() != noDataImage) {
+                    viewSwitcher.showNext();
+                }
             } else {
-                setupTrainList(models);
+                if (viewSwitcher.getCurrentView() != trainListView) {
+                    viewSwitcher.showPrevious(); // 切换回列表
+                }
+                if (trainAdapter != null) {
+                    trainAdapter.updateData(models);
+                } else {
+                    setupTrainList(models);
+                }
             }
+        });
+
+        utilViewModel.getSelectedDate().observe(getViewLifecycleOwner(), date -> {
+            saleTime = date;
+            viewModel.loadStationList(page, size, start, end, date);
+        });
+
+        utilViewModel.getDeparture().observe(getViewLifecycleOwner(), city -> {
+            start = city;
+            viewModel.loadStationList(page, size, city, end, saleTime);
+        });
+
+        utilViewModel.getDestination().observe(getViewLifecycleOwner(), city -> {
+            end = city;
+            viewModel.loadStationList(page, size, start, city, saleTime);
         });
     }
 
@@ -110,14 +144,12 @@ public class QueryFragment extends Fragment {
         dateRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
 
         List<DateItem> dateList = viewModel.generateDateList();
-        DateAdapter dateAdapter = new DateAdapter(requireContext(), dateList);
+        DateAdapter dateAdapter = new DateAdapter(requireContext(), dateList, utilViewModel);
         dateRecyclerView.setAdapter(dateAdapter);
     }
 
 
     private void setupTrainList(List<TrainModel> trainModels) {
-        RecyclerView trainListView = binding.trainList;
-
         // Create adapter with the received models
         trainAdapter = new TrainAdapter(requireContext(), trainModels);
 

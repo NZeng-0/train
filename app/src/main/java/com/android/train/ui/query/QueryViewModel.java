@@ -82,6 +82,7 @@ public class QueryViewModel extends ViewModel {
             }
         });
     }
+
     /**
      * 将API响应数据转换为TrainModel列表
      */
@@ -104,15 +105,19 @@ public class QueryViewModel extends ViewModel {
                     relation.getStartRegion(),  // 出发站
                     relation.getEndStation(),   // 到达站
                     duration,                   // 行程时长
-                    "有票",                      // 二等座状态 (示例值，需替换为实际值)
-                    "有票",                      // 一等座状态 (示例值，需替换为实际值)
-                    "有票"                       // 商务座状态 (示例值，需替换为实际值)
+                    getSeatCount(relation.getSecondSeat()),
+                    getSeatCount(relation.getFirstSeat()),
+                    getSeatCount(relation.getBusinessSeat())
             );
 
             trainModels.add(trainModel);
         }
 
         return trainModels;
+    }
+
+    private String getSeatCount(Integer count) {
+        return count + "张";
     }
 
     /**

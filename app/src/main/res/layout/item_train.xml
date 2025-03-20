@@ -79,7 +79,7 @@
                     android:layout_width="12dp"
                     android:layout_height="12dp"
                     android:gravity="center_vertical"
-                    android:background="@drawable/station_tag_cross"
+                    android:background="@drawable/station_tag_start"
                     android:textColor="#FFFFFF"
                     />
 

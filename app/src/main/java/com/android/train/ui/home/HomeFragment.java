@@ -4,6 +4,7 @@ import static android.app.Activity.RESULT_OK;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,11 @@ import com.android.train.databinding.FragmentHomeBinding;
 import com.android.train.ui.query.QueryActivity;
 import com.android.train.ui.station.StationActivity;
 import com.android.train.utils.PreferencesUtil;
+import com.android.train.viewmodel.UtilViewModel;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class HomeFragment extends Fragment {
 
@@ -32,8 +38,7 @@ public class HomeFragment extends Fragment {
     private ImageView swap;
     private static final int REQUEST_CODE_STATION = 1001;
     private ActivityResultLauncher<Intent> stationResultLauncher;
-
-    private String start, end;
+    private UtilViewModel utilViewModel;
 
     public View onCreateView(
             @NonNull LayoutInflater inflater,
@@ -41,6 +46,7 @@ public class HomeFragment extends Fragment {
             Bundle savedInstanceState) {
 
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        utilViewModel = new ViewModelProvider(this).get(UtilViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         tvDeparture = binding.tvDeparture;
@@ -56,13 +62,6 @@ public class HomeFragment extends Fragment {
         if (savedDeparture == null) savedDeparture = "北京";
         if (savedDestination == null) savedDestination = "上海";
 
-        String saveStart = PreferencesUtil.getString(requireContext(), "departureCity");
-        String saveEnd = PreferencesUtil.getString(requireContext(), "destinationCity");
-        start = saveStart;
-        end = saveEnd;
-        if (saveStart == null) start = "北京";
-        if (saveEnd == null) end = "上海";
-
         // 设置到 ViewModel，触发 UI 更新
         viewModel.setDepartureCity(savedDeparture);
         viewModel.setDestinationCity(savedDestination);
@@ -70,7 +69,7 @@ public class HomeFragment extends Fragment {
         // 观察 LiveData，并更新 UI
         observeViewModel();
         // 设置 swap 按钮点击事件
-        swap.setOnClickListener(v -> viewModel.swapText());
+        swap.setOnClickListener(v -> viewModel.swapText(requireContext()));
         // 月日选择
         date.setOnClickListener(v -> viewModel.showDatePicker(getContext()));
         // 选择出发地
@@ -85,10 +84,10 @@ public class HomeFragment extends Fragment {
 
         // 查询车次
         binding.btnSearch.setOnClickListener(v -> {
+            String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
             Intent intent = new Intent(requireContext(), QueryActivity.class);
-            intent.putExtra("departure", start);
-            intent.putExtra("destination", end);
-            intent.putExtra("saleTime", end);
+            intent.putExtra("saleTime", today);
             startActivity(intent);
         });
 
@@ -112,13 +111,11 @@ public class HomeFragment extends Fragment {
         viewModel.getFormattedDate().observe(getViewLifecycleOwner(), formattedDate ->
                 date.setText(formattedDate));
 
-        viewModel.getDeparture().observe(getViewLifecycleOwner(), city -> {
-            start = city;
+        utilViewModel.getDeparture().observe(getViewLifecycleOwner(), city -> {
             PreferencesUtil.putString(requireContext(), "departureCity", city);
         });
 
-        viewModel.getDestination().observe(getViewLifecycleOwner(), city -> {
-            end = city;
+        utilViewModel.getDestination().observe(getViewLifecycleOwner(), city -> {
             PreferencesUtil.putString(requireContext(), "destinationCity", city);
         });
     }
@@ -141,6 +138,11 @@ public class HomeFragment extends Fragment {
         stationResultLauncher.launch(intent);
     }
 
+    /**
+     * 选择日期结果处理
+     *
+     * @param result
+     */
     private void handelResult(ActivityResult result) {
         if (result.getResultCode() == RESULT_OK) {
             Intent data = result.getData();
@@ -151,10 +153,10 @@ public class HomeFragment extends Fragment {
                 // 更新数据，然后驱动ui更新
                 if ("departure".equals(type)) {
                     viewModel.setDepartureCity(stationName);
-                    viewModel.setDeparture(city);
+                    utilViewModel.setDeparture(city);
                 } else if ("destination".equals(type)) {
                     viewModel.setDestinationCity(stationName);
-                    viewModel.setDestination(city);
+                    utilViewModel.setDestination(city);
                 }
             }
         }

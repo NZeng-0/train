@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.android.train.utils.DateUtils;
+import com.android.train.utils.PreferencesUtil;
 import com.android.train.utils.To;
 import com.github.gzuliyujiang.wheelpicker.DatePicker;
 import com.github.gzuliyujiang.wheelpicker.annotation.DateMode;
@@ -22,8 +23,6 @@ public class HomeViewModel extends ViewModel {
 
     private final MutableLiveData<String> departureCity = new MutableLiveData<>();
     private final MutableLiveData<String> destinationCity = new MutableLiveData<>();
-    private final MutableLiveData<String> departure = new MutableLiveData<>();
-    private final MutableLiveData<String> destination = new MutableLiveData<>();
     private final MutableLiveData<String> selectedMonth = new MutableLiveData<>();
     private final MutableLiveData<String> selectedDay = new MutableLiveData<>();
     private final MediatorLiveData<String> formattedDate = new MediatorLiveData<>();
@@ -41,10 +40,16 @@ public class HomeViewModel extends ViewModel {
         formattedDate.addSource(selectedDay, day -> updateFormattedDate());
     }
 
-    public void swapText() {
+    public void swapText(Context context) {
         String temp = departureCity.getValue();
         departureCity.setValue(destinationCity.getValue());
         destinationCity.setValue(temp);
+
+        String start = PreferencesUtil.getString(context, "destinationCity");
+        String end = PreferencesUtil.getString(context, "departureCity");
+
+        PreferencesUtil.putString(context,"destinationCity", end);
+        PreferencesUtil.putString(context,"departureCity", start);
     }
 
     private void updateFormattedDate() {
@@ -59,11 +64,9 @@ public class HomeViewModel extends ViewModel {
             formattedDate.setValue(formatted);
         }
     }
-
     public LiveData<String> getFormattedDate() {
         return formattedDate;
     }
-
     public void showDatePicker(Context context) {
         DatePicker picker = new DatePicker((Activity) context);
         picker.setBodyWidth(200);
@@ -99,42 +102,22 @@ public class HomeViewModel extends ViewModel {
         // 显示日期选择器
         picker.show();
     }
-
     public LiveData<String> getSelectedMonth() {
         return selectedMonth;
     }
-
     public LiveData<String> getSelectedDay() {
         return selectedDay;
     }
-
     public LiveData<String> getDepartureCity() {
         return departureCity;
     }
-
     public LiveData<String> getDestinationCity() {
         return destinationCity;
     }
-    public LiveData<String> getDeparture() {
-        return departure;
-    }
-
-    public LiveData<String> getDestination() {
-        return destination;
-    }
-
     public void setDepartureCity(String city) {
         departureCity.setValue(city);
     }
-
     public void setDestinationCity(String city) {
         destinationCity.setValue(city);
-    }
-    public void setDeparture(String city) {
-        departure.setValue(city);
-    }
-
-    public void setDestination(String city) {
-        destination.setValue(city);
     }
 }

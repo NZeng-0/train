@@ -52,10 +52,11 @@ public class TrainAdapter extends RecyclerView.Adapter<TrainAdapter.TrainViewHol
         // Set ticket status
         setTicketStatus(holder.secondClassTextView, train.getSecondClassStatus());
         setTicketStatus(holder.firstClassTextView, train.getFirstClassStatus());
+        setTicketStatus(holder.businessClassTextView, train.getBusinessClass());
 
-        if (train.getTrainNumber().contains("G")) {
+//        if (train.getTrainNumber().contains("G")) {
             holder.trainNumberTextView.setText(train.getTrainNumber());
-        }
+//        }
 
         // Set click listener for the entire item
         holder.itemView.setOnClickListener(v -> {
@@ -98,32 +99,6 @@ public class TrainAdapter extends RecyclerView.Adapter<TrainAdapter.TrainViewHol
         } else if (status.equals("售罄")) {
             textView.setTextColor(Color.parseColor("#999999"));
         }
-    }
-
-    // Filter methods
-    public void filterByTrainType(boolean highSpeedOnly, boolean normalOnly) {
-        // Implementation of filtering logic
-        // This would typically involve creating a filtered list and calling notifyDataSetChanged()
-    }
-
-    public void filterByAvailability(boolean availableOnly) {
-        // Implementation of filtering logic
-        // This would typically involve creating a filtered list and calling notifyDataSetChanged()
-    }
-
-    public void sortByDepartureTime() {
-        // Sort trains by departure time
-        // This would typically involve sorting the list and calling notifyDataSetChanged()
-    }
-
-    public void sortByDuration() {
-        // Sort trains by duration
-        // This would typically involve sorting the list and calling notifyDataSetChanged()
-    }
-
-    public void sortByPrice() {
-        // Sort trains by price
-        // This would typically involve sorting the list and calling notifyDataSetChanged()
     }
 
     // ViewHolder class

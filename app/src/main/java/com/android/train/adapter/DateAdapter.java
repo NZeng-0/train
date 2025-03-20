@@ -11,20 +11,28 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.train.R;
 import com.android.train.model.DateItem;
+import com.android.train.viewmodel.UtilViewModel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DateAdapter extends RecyclerView.Adapter<DateAdapter.ViewHolder> {
-
     private final List<DateItem> dateList;
     private final Context context;
+
+    private final UtilViewModel utilViewModel;
 
     // 选中索引
     private int selectedPosition = RecyclerView.SCROLLBAR_POSITION_DEFAULT;
 
-    public DateAdapter(Context context, List<DateItem> dateList) {
+    public DateAdapter(Context context, List<DateItem> dateList, UtilViewModel utilViewModel) {
         this.context = context;
         this.dateList = dateList;
+        this.utilViewModel = utilViewModel;
     }
 
     @NonNull
@@ -54,9 +62,10 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.ViewHolder> {
         holder.itemView.setOnClickListener(v -> {
             int newPosition = holder.getAdapterPosition();
             if (newPosition != RecyclerView.NO_POSITION) {
-                notifyItemChanged(selectedPosition); // 重置上一个选中项
+                notifyItemChanged(selectedPosition);
                 selectedPosition = newPosition;
-                notifyItemChanged(selectedPosition); // 更新当前选中项
+                notifyItemChanged(selectedPosition);
+                utilViewModel.setSelectedDate(convertToFullDate(dateList.get(selectedPosition).getDate()));
             }
         });
     }
@@ -64,6 +73,26 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         return dateList.size();
+    }
+
+    public String convertToFullDate(String shortDate) {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("MM.dd", Locale.CHINA);
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+
+        try {
+            Date date = inputFormat.parse(shortDate);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+
+            // 需要补充年份，假设使用当前年份
+            int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+            calendar.set(Calendar.YEAR, currentYear);
+
+            return outputFormat.format(calendar.getTime()); // 转换为 yyyy-MM-dd
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null; // 解析失败返回 null
+        }
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

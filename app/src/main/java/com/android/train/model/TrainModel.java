@@ -10,12 +10,13 @@ public class TrainModel {
     private String duration;
     private String secondClassStatus;
     private String firstClassStatus;
+    private String businessClass;
     private boolean isSpecialOffer;
     private String price;
 
     public TrainModel(String departureTime, String trainNumber, String arrivalTime,
                       String departureStation, String arrivalStation, String duration,
-                      String secondClassStatus, String firstClassStatus, String businessClassStatus
+                      String secondClassStatus, String firstClassStatus, String businessClass
     ) {
         this.departureTime = departureTime;
         this.trainNumber = trainNumber;
@@ -25,6 +26,7 @@ public class TrainModel {
         this.duration = duration;
         this.secondClassStatus = secondClassStatus;
         this.firstClassStatus = firstClassStatus;
+        this.businessClass = businessClass;
     }
 
     // Getters and setters
@@ -106,5 +108,13 @@ public class TrainModel {
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    public String getBusinessClass() {
+        return businessClass;
+    }
+
+    public void setBusinessClass(String businessClass) {
+        this.businessClass = businessClass;
     }
 }
