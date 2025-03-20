@@ -3,11 +3,11 @@ package com.android.train.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+/**
+ * 数据持久化帮助类
+ */
 public class PreferencesUtil {
     public static String PREFERENCE_NAME = "user";
-
-    /**用户名的key值*/
-    public static String USERNAME = "username";
 
     /**存储字符串*/
     public static boolean putString(Context context, String key, String value) {

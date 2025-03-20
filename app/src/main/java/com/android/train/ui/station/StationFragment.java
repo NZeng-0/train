@@ -93,7 +93,7 @@ public class StationFragment extends Fragment {
 
         stationAdapter = new StationAdapter(new ArrayList<>(), station -> {
             // 选择站点后返回上一个 Fragment
-            ((StationActivity) requireActivity()).returnSelectedStation(station.getName());
+            ((StationActivity) requireActivity()).returnSelectedStation(station);
         });
 
         initViews();
@@ -150,9 +150,10 @@ public class StationFragment extends Fragment {
             getCurrentLocation();
         });
         // 点击当前定位
-        tvCurrentLocation.setOnClickListener(v ->
-                ((StationActivity) requireActivity()).returnSelectedStation(
-                        (String) tvCurrentLocation.getText()));
+//        tvCurrentLocation.setOnClickListener(v ->
+//                ((StationActivity) requireActivity()).returnSelectedStation(
+//                        (String) tvCurrentLocation.getText())
+//        );
     }
 
     private void loadData() {

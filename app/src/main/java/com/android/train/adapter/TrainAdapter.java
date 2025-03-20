@@ -52,7 +52,6 @@ public class TrainAdapter extends RecyclerView.Adapter<TrainAdapter.TrainViewHol
         // Set ticket status
         setTicketStatus(holder.secondClassTextView, train.getSecondClassStatus());
         setTicketStatus(holder.firstClassTextView, train.getFirstClassStatus());
-        setTicketStatus(holder.businessClassTextView, train.getBusinessClassStatus());
 
         if (train.getTrainNumber().contains("G")) {
             holder.trainNumberTextView.setText(train.getTrainNumber());
@@ -73,6 +72,12 @@ public class TrainAdapter extends RecyclerView.Adapter<TrainAdapter.TrainViewHol
 
             context.startActivity(intent);
         });
+    }
+
+    public void updateData(List<TrainModel> newData) {
+        this.trainList.clear();
+        this.trainList.addAll(newData);
+        notifyDataSetChanged();
     }
 
     @Override

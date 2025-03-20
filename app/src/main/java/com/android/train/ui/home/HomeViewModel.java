@@ -22,6 +22,8 @@ public class HomeViewModel extends ViewModel {
 
     private final MutableLiveData<String> departureCity = new MutableLiveData<>();
     private final MutableLiveData<String> destinationCity = new MutableLiveData<>();
+    private final MutableLiveData<String> departure = new MutableLiveData<>();
+    private final MutableLiveData<String> destination = new MutableLiveData<>();
     private final MutableLiveData<String> selectedMonth = new MutableLiveData<>();
     private final MutableLiveData<String> selectedDay = new MutableLiveData<>();
     private final MediatorLiveData<String> formattedDate = new MediatorLiveData<>();
@@ -113,6 +115,13 @@ public class HomeViewModel extends ViewModel {
     public LiveData<String> getDestinationCity() {
         return destinationCity;
     }
+    public LiveData<String> getDeparture() {
+        return departure;
+    }
+
+    public LiveData<String> getDestination() {
+        return destination;
+    }
 
     public void setDepartureCity(String city) {
         departureCity.setValue(city);
@@ -120,5 +129,12 @@ public class HomeViewModel extends ViewModel {
 
     public void setDestinationCity(String city) {
         destinationCity.setValue(city);
+    }
+    public void setDeparture(String city) {
+        departure.setValue(city);
+    }
+
+    public void setDestination(String city) {
+        destination.setValue(city);
     }
 }

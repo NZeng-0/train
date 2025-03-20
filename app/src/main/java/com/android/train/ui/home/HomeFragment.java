@@ -22,7 +22,7 @@ import com.android.train.R;
 import com.android.train.databinding.FragmentHomeBinding;
 import com.android.train.ui.query.QueryActivity;
 import com.android.train.ui.station.StationActivity;
-import com.android.train.utils.PreferenceUtils;
+import com.android.train.utils.PreferencesUtil;
 
 public class HomeFragment extends Fragment {
 
@@ -32,6 +32,8 @@ public class HomeFragment extends Fragment {
     private ImageView swap;
     private static final int REQUEST_CODE_STATION = 1001;
     private ActivityResultLauncher<Intent> stationResultLauncher;
+
+    private String start, end;
 
     public View onCreateView(
             @NonNull LayoutInflater inflater,
@@ -48,16 +50,18 @@ public class HomeFragment extends Fragment {
 
         View root = binding.getRoot();
         // 读取已保存的站点信息
-        String savedDeparture = PreferenceUtils.getFromPreferences(requireContext(), "departure");
-        String savedDestination = PreferenceUtils.getFromPreferences(requireContext(), "destination");
+        String savedDeparture = PreferencesUtil.getString(requireContext(), "departure");
+        String savedDestination = PreferencesUtil.getString(requireContext(), "destination");
 
-        if (savedDeparture == null) {
-            savedDeparture = "北京";
-        }
+        if (savedDeparture == null) savedDeparture = "北京";
+        if (savedDestination == null) savedDestination = "上海";
 
-        if (savedDestination == null) {
-            savedDestination = "上海";
-        }
+        String saveStart = PreferencesUtil.getString(requireContext(), "departureCity");
+        String saveEnd = PreferencesUtil.getString(requireContext(), "destinationCity");
+        start = saveStart;
+        end = saveEnd;
+        if (saveStart == null) start = "北京";
+        if (saveEnd == null) end = "上海";
 
         // 设置到 ViewModel，触发 UI 更新
         viewModel.setDepartureCity(savedDeparture);
@@ -82,6 +86,9 @@ public class HomeFragment extends Fragment {
         // 查询车次
         binding.btnSearch.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), QueryActivity.class);
+            intent.putExtra("departure", start);
+            intent.putExtra("destination", end);
+            intent.putExtra("saleTime", end);
             startActivity(intent);
         });
 
@@ -92,19 +99,28 @@ public class HomeFragment extends Fragment {
         // 观察出发点
         viewModel.getDepartureCity().observe(getViewLifecycleOwner(), city -> {
             tvDeparture.setText(city);
-            PreferenceUtils.saveToPreferences(requireContext(), "departure", city);
+            PreferencesUtil.putString(requireContext(), "departure", city);
         });
 
         // 观察到达地
         viewModel.getDestinationCity().observe(getViewLifecycleOwner(), city -> {
             tvDestination.setText(city);
-            PreferenceUtils.saveToPreferences(requireContext(), "destination", city);
+            PreferencesUtil.putString(requireContext(), "destination", city);
         });
 
         // 观察日期
         viewModel.getFormattedDate().observe(getViewLifecycleOwner(), formattedDate ->
                 date.setText(formattedDate));
 
+        viewModel.getDeparture().observe(getViewLifecycleOwner(), city -> {
+            start = city;
+            PreferencesUtil.putString(requireContext(), "departureCity", city);
+        });
+
+        viewModel.getDestination().observe(getViewLifecycleOwner(), city -> {
+            end = city;
+            PreferencesUtil.putString(requireContext(), "destinationCity", city);
+        });
     }
 
     @Override
@@ -130,12 +146,15 @@ public class HomeFragment extends Fragment {
             Intent data = result.getData();
             if (data != null) {
                 String stationName = data.getStringExtra("selected_station");
+                String city = data.getStringExtra("selected_city");
                 String type = data.getStringExtra("type");
                 // 更新数据，然后驱动ui更新
                 if ("departure".equals(type)) {
                     viewModel.setDepartureCity(stationName);
+                    viewModel.setDeparture(city);
                 } else if ("destination".equals(type)) {
                     viewModel.setDestinationCity(stationName);
+                    viewModel.setDestination(city);
                 }
             }
         }

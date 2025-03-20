@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.android.train.R;
+import com.android.train.pojo.StationInfo;
 
 public class StationActivity extends AppCompatActivity {
 
@@ -20,9 +21,10 @@ public class StationActivity extends AppCompatActivity {
         }
     }
 
-    public void returnSelectedStation(String stationName) {
+    public void returnSelectedStation(StationInfo station) {
         Intent resultIntent = new Intent();
-        resultIntent.putExtra("selected_station", stationName);
+        resultIntent.putExtra("selected_station", station.getName());
+        resultIntent.putExtra("selected_city", station.getRegionName());
         resultIntent.putExtra("type", getIntent().getStringExtra("type"));
         setResult(RESULT_OK, resultIntent);
         finish();

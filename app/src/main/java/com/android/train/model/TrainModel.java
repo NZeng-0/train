@@ -1,5 +1,6 @@
 package com.android.train.model;
 
+
 public class TrainModel {
     private String departureTime;
     private String trainNumber;
@@ -9,14 +10,13 @@ public class TrainModel {
     private String duration;
     private String secondClassStatus;
     private String firstClassStatus;
-    private String businessClassStatus;
     private boolean isSpecialOffer;
     private String price;
 
     public TrainModel(String departureTime, String trainNumber, String arrivalTime,
                       String departureStation, String arrivalStation, String duration,
-                      String secondClassStatus, String firstClassStatus, String businessClassStatus,
-                      boolean isSpecialOffer) {
+                      String secondClassStatus, String firstClassStatus, String businessClassStatus
+    ) {
         this.departureTime = departureTime;
         this.trainNumber = trainNumber;
         this.arrivalTime = arrivalTime;
@@ -25,20 +25,6 @@ public class TrainModel {
         this.duration = duration;
         this.secondClassStatus = secondClassStatus;
         this.firstClassStatus = firstClassStatus;
-        this.businessClassStatus = businessClassStatus;
-        this.isSpecialOffer = isSpecialOffer;
-
-        // Set default price
-        if (isSpecialOffer) {
-            this.price = "¥401起";
-        } else {
-            // Calculate price based on train type (just an example)
-            if (trainNumber.startsWith("G")) {
-                this.price = "¥" + (120 + (int)(Math.random() * 30)) + "起";
-            } else {
-                this.price = "¥" + (80 + (int)(Math.random() * 20)) + "起";
-            }
-        }
     }
 
     // Getters and setters
@@ -104,14 +90,6 @@ public class TrainModel {
 
     public void setFirstClassStatus(String firstClassStatus) {
         this.firstClassStatus = firstClassStatus;
-    }
-
-    public String getBusinessClassStatus() {
-        return businessClassStatus;
-    }
-
-    public void setBusinessClassStatus(String businessClassStatus) {
-        this.businessClassStatus = businessClassStatus;
     }
 
     public boolean isSpecialOffer() {

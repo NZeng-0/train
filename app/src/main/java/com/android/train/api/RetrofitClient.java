@@ -1,7 +1,5 @@
 package com.android.train.api;
 
-import static java.security.AccessController.getContext;
-
 import android.content.Context;
 
 import com.android.train.utils.PreferencesUtil;

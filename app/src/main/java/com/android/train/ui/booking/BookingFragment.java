@@ -12,7 +12,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
@@ -23,7 +22,6 @@ import android.widget.ImageView;
 import com.android.train.R;
 import com.android.train.adapter.SeatAdapter;
 import com.android.train.databinding.FragmentBookingBinding;
-import com.android.train.model.Seat;
 import com.android.train.model.SeatOption;
 import com.android.train.utils.ToastUtil;
 
