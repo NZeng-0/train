@@ -96,4 +96,14 @@ public class PreferencesUtil {
         editor.clear();
         return editor.commit();
     }
+
+    /**
+     * 根据 key 清除 SharedPreferences 中的某个数据
+     */
+    public static boolean removePreferenceByKey(Context context, String key) {
+        SharedPreferences pref = context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.remove(key); // 删除指定 key
+        return editor.commit(); // 立即提交修改
+    }
 }

@@ -37,4 +37,8 @@ public class AuthViewModel extends ViewModel {
     public void login(UserRequest userRequest) {
         authRepository.login(userRequest);
     }
+
+    public void logout() {
+        authRepository.logout();
+    }
 }

@@ -101,6 +101,29 @@ public class AuthRepository {
         });
     }
 
+    public void logout() {
+        userService.logout().enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<AjaxResult<String>> call, @NonNull Response<AjaxResult<String>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    AjaxResult<String> result = response.body();
+                    if (result.isSuccess()) {
+                        msgLiveData.postValue("退出成功");
+                    } else {
+                        msgLiveData.postValue("退出失败：" + result.getMsg());
+                    }
+                } else {
+                    msgLiveData.postValue("请稍后重试！");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<AjaxResult<String>> call, @NonNull Throwable t) {
+                msgLiveData.postValue("网络错误，请稍后重试");
+            }
+        });
+    }
+
     public LiveData<Boolean> getNavigateLiveData() {
         return navigateLiveData;
     }

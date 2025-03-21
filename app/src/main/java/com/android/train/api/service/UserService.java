@@ -16,6 +16,9 @@ public interface UserService {
     @POST("/train/user/login")
     Call<AjaxResult<String>> login(@Body UserRequest userRequest);
 
+    @GET("/train/user/login")
+    Call<AjaxResult<String>> logout();
+
     @GET("/train/user/info")
     Call<AjaxResult<User>> getUserInfo();
 }

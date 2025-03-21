@@ -110,7 +110,7 @@ public class LoginFragment extends Fragment {
         authViewModel.getToken().observe(getViewLifecycleOwner(), token -> {
             if (token != null) {
                 // 这里可以存储 Token
-                boolean b = PreferencesUtil.putString(requireContext(), "token", token);
+                PreferencesUtil.putString(requireContext(), "token", token);
             }
         });
         authViewModel.getNavigateLiveData().observe(getViewLifecycleOwner(), navigate -> {
@@ -122,6 +122,7 @@ public class LoginFragment extends Fragment {
         authViewModel.getUserLiveData().observe(getViewLifecycleOwner(), user -> {
             if(user != null){
                 PreferencesUtil.putString(requireContext(),"username", user.getUsername());
+                PreferencesUtil.putString(requireContext(),"realName", user.getRealName());
                 PreferencesUtil.putString(requireContext(),"id", user.getId());
                 PreferencesUtil.putString(requireContext(),"phone", user.getPhone());
                 PreferencesUtil.putString(requireContext(),"email", user.getMail());
@@ -131,6 +132,7 @@ public class LoginFragment extends Fragment {
     }
 
     private void collectFormData() {
+        ToastUtil.showToast(requireContext(), "登录中");
         String username = Objects.requireNonNull(binding.etUsername.getText()).toString().trim();
         String password = Objects.requireNonNull(binding.etPassword.getText()).toString().trim();
         if (!validateForm()) return;
