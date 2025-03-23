@@ -23,10 +23,12 @@ import com.android.train.R;
 import com.android.train.adapter.SeatAdapter;
 import com.android.train.databinding.FragmentBookingBinding;
 import com.android.train.model.SeatOption;
+import com.android.train.utils.PreferencesUtil;
 import com.android.train.utils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BookingFragment extends Fragment {
 
@@ -34,6 +36,7 @@ public class BookingFragment extends Fragment {
 
     private FragmentBookingBinding binding;
     private ImageView currentSelectedSeat = null;
+    private Intent intent;
 
     public static BookingFragment newInstance() {
         return new BookingFragment();
@@ -62,15 +65,29 @@ public class BookingFragment extends Fragment {
         Toolbar toolbar = binding.toolbar;
         toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
 
+        intent = requireActivity().getIntent();
+
         initTrain();
         initSeat();
         initSeatService();
 
+        String realName = PreferencesUtil.getString(requireContext(), "realName");
+        String idCard = PreferencesUtil.getString(requireContext(), "idCard");
+        binding.passengerName.setText(realName);
+        binding.idNumber.setText(maskIdCard(idCard));
+
         return root;
     }
 
-    private void initTrain(){
-        Intent intent = requireActivity().getIntent();
+    public static String maskIdCard(String idCard) {
+        int length = idCard.length();
+        if (idCard.length() < 7) {
+            return idCard.substring(0, 3) + "*".repeat(length - 5) + idCard.substring(length - 2);
+        }
+        return idCard.substring(0, 4) + "*".repeat(length - 7) + idCard.substring(length - 3);
+    }
+
+    private void initTrain() {
         if (intent != null) {
             String trainNumber = intent.getStringExtra("trainNumber");
             String departureStation = intent.getStringExtra("departureStation");
@@ -88,11 +105,13 @@ public class BookingFragment extends Fragment {
         }
     }
 
-    private void initSeat(){
+    private void initSeat() {
+        int[] prices = intent.getIntArrayExtra("prices");
+        String[] levels = new String[] { "二等","一等","商务" };
         List<SeatOption> seatList = new ArrayList<>();
-        seatList.add(new SeatOption("二等", 97, true));
-        seatList.add(new SeatOption("一等", 155, true));
-        seatList.add(new SeatOption("无座", 97, false));
+        for (int i = 0; i < Objects.requireNonNull(prices).length; i++) {
+            seatList.add(new SeatOption(levels[i], prices[i], true));
+        }
 
         SeatAdapter seatAdapter = new SeatAdapter(seatList, seatOption ->
                 ToastUtil.showToast(requireContext(), "选择：" + seatOption.getSeatType())
@@ -103,13 +122,14 @@ public class BookingFragment extends Fragment {
         binding.seatLevelList.setAdapter(seatAdapter);
     }
 
-    private void initSeatService(){
-        binding.seatA.setOnClickListener(v->selectSeat(binding.seatA));
-        binding.seatB.setOnClickListener(v->selectSeat(binding.seatB));
-        binding.seatC.setOnClickListener(v->selectSeat(binding.seatC));
-        binding.seatD.setOnClickListener(v->selectSeat(binding.seatD));
-        binding.seatF.setOnClickListener(v->selectSeat(binding.seatF));
+    private void initSeatService() {
+        binding.seatA.setOnClickListener(v -> selectSeat(binding.seatA));
+        binding.seatB.setOnClickListener(v -> selectSeat(binding.seatB));
+        binding.seatC.setOnClickListener(v -> selectSeat(binding.seatC));
+        binding.seatD.setOnClickListener(v -> selectSeat(binding.seatD));
+        binding.seatF.setOnClickListener(v -> selectSeat(binding.seatF));
     }
+
     private void selectSeat(ImageView selectedSeat) {
         // 如果点击的是当前已选中的座位，则取消选择
         if (selectedSeat == currentSelectedSeat) {

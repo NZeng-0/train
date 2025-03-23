@@ -40,7 +40,6 @@ public class SeatAdapter extends RecyclerView.Adapter<SeatAdapter.SeatViewHolder
         SeatOption seat = seatList.get(position);
         holder.tvSeatType.setText(seat.getSeatType());
         holder.tvPrice.setText("¥" + seat.getPrice());
-        holder.tvHave.setText(seat.isAvailable() ? "有": "无");
 
         // 设置可选状态
         if (seat.isAvailable()) {
@@ -69,13 +68,12 @@ public class SeatAdapter extends RecyclerView.Adapter<SeatAdapter.SeatViewHolder
     }
 
     public static class SeatViewHolder extends RecyclerView.ViewHolder {
-        TextView tvSeatType, tvPrice, tvHave;
+        TextView tvSeatType, tvPrice;
 
         public SeatViewHolder(@NonNull View itemView) {
             super(itemView);
             tvSeatType = itemView.findViewById(R.id.tv_seat_type);
             tvPrice = itemView.findViewById(R.id.tv_price);
-            tvHave = itemView.findViewById(R.id.tv_hava);
         }
     }
 }

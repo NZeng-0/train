@@ -12,11 +12,24 @@ public class TrainModel {
     private String firstClassStatus;
     private String businessClass;
     private boolean isSpecialOffer;
-    private String price;
 
-    public TrainModel(String departureTime, String trainNumber, String arrivalTime,
-                      String departureStation, String arrivalStation, String duration,
-                      String secondClassStatus, String firstClassStatus, String businessClass
+    private Integer businessPrice;
+    private Integer firstPrice;
+    private Integer secondPrice;
+
+    public TrainModel(
+            String departureTime,
+            String trainNumber,
+            String arrivalTime,
+            String departureStation,
+            String arrivalStation,
+            String duration,
+            String secondClassStatus,
+            String firstClassStatus,
+            String businessClass,
+            Integer businessPrice,
+            Integer firstPrice,
+            Integer secondPrice
     ) {
         this.departureTime = departureTime;
         this.trainNumber = trainNumber;
@@ -27,6 +40,9 @@ public class TrainModel {
         this.secondClassStatus = secondClassStatus;
         this.firstClassStatus = firstClassStatus;
         this.businessClass = businessClass;
+        this.businessPrice = businessPrice;
+        this.firstPrice = firstPrice;
+        this.secondPrice = secondPrice;
     }
 
     // Getters and setters
@@ -102,19 +118,35 @@ public class TrainModel {
         isSpecialOffer = specialOffer;
     }
 
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
     public String getBusinessClass() {
         return businessClass;
     }
 
     public void setBusinessClass(String businessClass) {
         this.businessClass = businessClass;
+    }
+
+    public Integer getBusinessPrice() {
+        return businessPrice;
+    }
+
+    public void setBusinessPrice(Integer businessPrice) {
+        this.businessPrice = businessPrice;
+    }
+
+    public Integer getFirstPrice() {
+        return firstPrice;
+    }
+
+    public void setFirstPrice(Integer firstPrice) {
+        this.firstPrice = firstPrice;
+    }
+
+    public Integer getSecondPrice() {
+        return secondPrice;
+    }
+
+    public void setSecondPrice(Integer secondPrice) {
+        this.secondPrice = secondPrice;
     }
 }

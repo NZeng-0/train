@@ -78,6 +78,10 @@ public class Relation {
     /** 二等座余票 */
     private Integer secondSeat;
 
+    private Integer businessPrice;
+    private Integer firstPrice;
+    private Integer secondPrice;
+
     public Relation(
             String id,
             String trainNumber,
@@ -94,7 +98,10 @@ public class Relation {
             String arrivalTime,
             Integer businessSeat,
             Integer firstSeat,
-            Integer secondSeat
+            Integer secondSeat,
+            Integer businessPrice,
+            Integer firstPrice,
+            Integer secondPrice
     ) {
         this.id = id;
         this.trainNumber = trainNumber;
@@ -112,6 +119,9 @@ public class Relation {
         this.businessSeat = businessSeat;
         this.firstSeat = firstSeat;
         this.secondSeat = secondSeat;
+        this.businessPrice = businessPrice;
+        this.firstPrice = firstPrice;
+        this.secondPrice = secondPrice;
     }
 
     public String getId() {
@@ -240,5 +250,28 @@ public class Relation {
 
     public void setSecondSeat(Integer secondSeat) {
         this.secondSeat = secondSeat;
+    }
+    public Integer getBusinessPrice() {
+        return businessPrice;
+    }
+
+    public void setBusinessPrice(Integer businessPrice) {
+        this.businessPrice = businessPrice;
+    }
+
+    public Integer getFirstPrice() {
+        return firstPrice;
+    }
+
+    public void setFirstPrice(Integer firstPrice) {
+        this.firstPrice = firstPrice;
+    }
+
+    public Integer getSecondPrice() {
+        return secondPrice;
+    }
+
+    public void setSecondPrice(Integer secondPrice) {
+        this.secondPrice = secondPrice;
     }
 }

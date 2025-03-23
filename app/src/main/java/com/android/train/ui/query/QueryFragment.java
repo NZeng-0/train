@@ -148,7 +148,6 @@ public class QueryFragment extends Fragment {
         dateRecyclerView.setAdapter(dateAdapter);
     }
 
-
     private void setupTrainList(List<TrainModel> trainModels) {
         // Create adapter with the received models
         trainAdapter = new TrainAdapter(requireContext(), trainModels);

@@ -123,6 +123,7 @@ public class LoginFragment extends Fragment {
             if(user != null){
                 PreferencesUtil.putString(requireContext(),"username", user.getUsername());
                 PreferencesUtil.putString(requireContext(),"realName", user.getRealName());
+                PreferencesUtil.putString(requireContext(),"idCard", user.getIdCard());
                 PreferencesUtil.putString(requireContext(),"id", user.getId());
                 PreferencesUtil.putString(requireContext(),"phone", user.getPhone());
                 PreferencesUtil.putString(requireContext(),"email", user.getMail());

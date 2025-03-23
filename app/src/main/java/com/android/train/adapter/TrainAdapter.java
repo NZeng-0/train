@@ -70,6 +70,12 @@ public class TrainAdapter extends RecyclerView.Adapter<TrainAdapter.TrainViewHol
             intent.putExtra("departureTime", train.getDepartureTime());
             intent.putExtra("arrivalTime", train.getArrivalTime());
             intent.putExtra("durationTime", train.getDuration());
+            int[] pricesArray = new int[]{
+                    train.getSecondPrice(),
+                    train.getFirstPrice(),
+                    train.getBusinessPrice(),
+            };
+            intent.putExtra("prices", pricesArray);
 
             context.startActivity(intent);
         });

@@ -32,15 +32,4 @@
         app:layout_constraintTop_toBottomOf="@id/tv_seat_type"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <TextView
-        android:id="@+id/tv_hava"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:text="有"
-        android:gravity="center"
-        android:textColor="@color/font_text"
-        app:layout_constraintTop_toBottomOf="@id/tv_seat_type"
-        app:layout_constraintStart_toStartOf="parent"/>
-
 </LinearLayout>

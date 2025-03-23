@@ -107,7 +107,10 @@ public class QueryViewModel extends ViewModel {
                     duration,                   // 行程时长
                     getSeatCount(relation.getSecondSeat()),
                     getSeatCount(relation.getFirstSeat()),
-                    getSeatCount(relation.getBusinessSeat())
+                    getSeatCount(relation.getBusinessSeat()),
+                    relation.getBusinessPrice(),
+                    relation.getFirstPrice(),
+                    relation.getSecondPrice()
             );
 
             trainModels.add(trainModel);

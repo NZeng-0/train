@@ -6,6 +6,7 @@ public class User {
     private String realName;
     private String phone;
     private String mail;
+    private String idCard;
 
     // Getter 和 Setter 方法
     public String getId() { return id; }
@@ -22,5 +23,13 @@ public class User {
 
     public String getMail() { return mail; }
     public void setMail(String mail) { this.mail = mail; }
+
+    public String getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
+    }
 }
 
