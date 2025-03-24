@@ -22,23 +22,22 @@ import android.widget.ImageView;
 import com.android.train.R;
 import com.android.train.adapter.SeatAdapter;
 import com.android.train.databinding.FragmentBookingBinding;
+import com.android.train.model.SeatInfo;
 import com.android.train.model.SeatOption;
+import com.android.train.ui.ticket.TicketActivity;
 import com.android.train.utils.PreferencesUtil;
 import com.android.train.utils.ToastUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class BookingFragment extends Fragment {
-
     private BookingViewModel viewModel;
-
     private FragmentBookingBinding binding;
-    private ImageView currentSelectedSeat = null;
     private Intent intent;
-
-    private String number;
 
     public static BookingFragment newInstance() {
         return new BookingFragment();
@@ -48,6 +47,7 @@ public class BookingFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this).get(BookingViewModel.class);
+        viewModel.initSeatInfoMap();
     }
 
     @Nullable
@@ -55,7 +55,8 @@ public class BookingFragment extends Fragment {
     public View onCreateView(
             @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+            @Nullable Bundle savedInstanceState)
+    {
         binding = FragmentBookingBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         // 适配刘海屏 & 状态栏安全区域
@@ -73,32 +74,65 @@ public class BookingFragment extends Fragment {
 
         initTrain();
         initSeat();
-        initSeatService();
+        setupSeatClickListeners();
+        setupObservers();
 
         String realName = PreferencesUtil.getString(requireContext(), "realName");
         String idCard = PreferencesUtil.getString(requireContext(), "idCard");
         binding.passengerName.setText(realName);
-        binding.idNumber.setText(maskIdCard(idCard));
+        binding.idNumber.setText(BookingViewModel.maskIdCard(idCard));
 
         binding.btnSubmitOrder.setOnClickListener(v -> {
-            if(number == null) {
+            if(!viewModel.validateOrderSubmission()) {
                 ToastUtil.showToast(requireContext(), "请选择座位");
                 return;
             }
-            String selected = "坐席等级 : " + binding.seatClass.getText() + "座位号" + number;
-            ToastUtil.showToast(requireContext(), "订单处理中..."+selected);
-
+            ToastUtil.showToast(requireContext(), "订单处理中...");
+            Intent intent = new Intent(requireContext(), TicketActivity.class);
+            startActivity(intent);
         });
 
         return root;
     }
 
-    public static String maskIdCard(String idCard) {
-        int length = idCard.length();
-        if (idCard.length() < 7) {
-            return idCard.substring(0, 3) + "*".repeat(length - 5) + idCard.substring(length - 2);
+    private void setupObservers() {
+        // Observe seat selection changes
+        viewModel.getSelectedSeatNumber().observe(getViewLifecycleOwner(), seatNumber -> {
+            // Additional UI updates can be performed here when seat selection changes
+        });
+
+        // Observe seat class changes
+        viewModel.getSelectedSeatClass().observe(getViewLifecycleOwner(), seatClass -> {
+            binding.seatClass.setText(seatClass);
+        });
+
+        // Observe seat visibility changes
+        viewModel.getSeatVisibility().observe(getViewLifecycleOwner(), this::updateSeatVisibility);
+    }
+
+    private void updateSeatVisibility(Map<Integer, Boolean> visibilityMap) {
+        Map<ImageView, Integer> seatViewMap = new HashMap<>();
+        seatViewMap.put(binding.seatA, R.id.seat_a);
+        seatViewMap.put(binding.seatB, R.id.seat_b);
+        seatViewMap.put(binding.seatC, R.id.seat_c);
+        seatViewMap.put(binding.seatD, R.id.seat_d);
+        seatViewMap.put(binding.seatF, R.id.seat_f);
+
+        for (Map.Entry<ImageView, Integer> entry : seatViewMap.entrySet()) {
+            ImageView seat = entry.getKey();
+            Integer seatId = entry.getValue();
+            boolean isVisible = Boolean.TRUE.equals(visibilityMap.getOrDefault(seatId, false));
+
+            seat.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+
+            // Reset background to unselected state for visible seats
+            if (isVisible) {
+                SeatInfo info = viewModel.getSeatInfo(seatId);
+                if (info != null) {
+                    seat.setBackgroundResource(info.normalBackground);
+                }
+            }
         }
-        return idCard.substring(0, 4) + "*".repeat(length - 7) + idCard.substring(length - 3);
     }
 
     private void initTrain() {
@@ -128,7 +162,7 @@ public class BookingFragment extends Fragment {
         }
 
         SeatAdapter seatAdapter = new SeatAdapter(seatList, seatOption -> {
-            binding.seatClass.setText(seatOption.getSeatType());
+            viewModel.updateSeatState(seatOption.getSeatType());
             ToastUtil.showToast(requireContext(), "选择：" + seatOption.getSeatType());
         });
 
@@ -137,69 +171,52 @@ public class BookingFragment extends Fragment {
         binding.seatLevelList.setAdapter(seatAdapter);
     }
 
-    private void initSeatService() {
-        binding.seatA.setOnClickListener(v -> selectSeat(binding.seatA));
-        binding.seatB.setOnClickListener(v -> selectSeat(binding.seatB));
-        binding.seatC.setOnClickListener(v -> selectSeat(binding.seatC));
-        binding.seatD.setOnClickListener(v -> selectSeat(binding.seatD));
-        binding.seatF.setOnClickListener(v -> selectSeat(binding.seatF));
-    }
+    private void setupSeatClickListeners() {
+        // 座位列表
+        Map<ImageView, Integer> seatViewMap = new HashMap<>();
+        seatViewMap.put(binding.seatA, R.id.seat_a);
+        seatViewMap.put(binding.seatB, R.id.seat_b);
+        seatViewMap.put(binding.seatC, R.id.seat_c);
+        seatViewMap.put(binding.seatD, R.id.seat_d);
+        seatViewMap.put(binding.seatF, R.id.seat_f);
 
-    private void selectSeat(ImageView selectedSeat) {
-        // 如果点击的是当前已选中的座位，则取消选择
-        if (selectedSeat == currentSelectedSeat) {
-            resetSeatBackground(selectedSeat);
-            currentSelectedSeat = null;
-            return;
-        }
+        // Clear any previous listeners and set new ones
+        for (Map.Entry<ImageView, Integer> entry : seatViewMap.entrySet()) {
+            ImageView seat = entry.getKey();
+            Integer seatId = entry.getValue();
 
-        // 如果已有选中的座位，重置其背景
-        if (currentSelectedSeat != null) {
-            resetSeatBackground(currentSelectedSeat);
-        }
+            seat.setOnClickListener(v -> {
+                // Only process clicks on visible seats
+                if (seat.getVisibility() == View.VISIBLE) {
+                    String currentSelection = viewModel.getSelectedSeatNumber().getValue();
+                    SeatInfo info = viewModel.getSeatInfo(seatId);
 
-        // 设置新选中座位的背景为选中状态
-        setSeatSelectedBackground(selectedSeat);
-        currentSelectedSeat = selectedSeat;
-    }
+                    if (info != null && info.seatNumber.equals(currentSelection)) {
+                        // Deselect current seat
+                        viewModel.resetSeatSelection();
+                        seat.setBackgroundResource(info.normalBackground);
+                    } else {
+                        // Reset all seats to unselected state
+                        for (Map.Entry<ImageView, Integer> resetEntry : seatViewMap.entrySet()) {
+                            ImageView resetSeat = resetEntry.getKey();
+                            Integer resetSeatId = resetEntry.getValue();
 
-    private void resetSeatBackground(ImageView seat) {
-        // 根据座位ID重置为未选中状态的背景
-        if (seat.getId() == R.id.seat_a) {
-            number = null;
-            seat.setBackgroundResource(R.drawable.seat_a);
-        } else if (seat.getId() == R.id.seat_b) {
-            number = null;
-            seat.setBackgroundResource(R.drawable.seat_b);
-        } else if (seat.getId() == R.id.seat_c) {
-            number = null;
-            seat.setBackgroundResource(R.drawable.seat_c);
-        } else if (seat.getId() == R.id.seat_d) {
-            number = null;
-            seat.setBackgroundResource(R.drawable.seat_d);
-        } else if (seat.getId() == R.id.seat_f) {
-            number = null;
-            seat.setBackgroundResource(R.drawable.seat_f);
-        }
-    }
+                            if (resetSeat.getVisibility() == View.VISIBLE) {
+                                SeatInfo resetInfo = viewModel.getSeatInfo(resetSeatId);
+                                if (resetInfo != null) {
+                                    resetSeat.setBackgroundResource(resetInfo.normalBackground);
+                                }
+                            }
+                        }
 
-    private void setSeatSelectedBackground(ImageView seat) {
-        // 根据座位ID设置为选中状态的背景
-        if (seat.getId() == R.id.seat_a) {
-            number = "A";
-            seat.setBackgroundResource(R.drawable.seat_a_select);
-        } else if (seat.getId() == R.id.seat_b) {
-            number = "B";
-            seat.setBackgroundResource(R.drawable.seat_b_select);
-        } else if (seat.getId() == R.id.seat_c) {
-            number = "C";
-            seat.setBackgroundResource(R.drawable.seat_c_select);
-        } else if (seat.getId() == R.id.seat_d) {
-            number = "D";
-            seat.setBackgroundResource(R.drawable.seat_d_select);
-        } else if (seat.getId() == R.id.seat_f) {
-            number = "F";
-            seat.setBackgroundResource(R.drawable.seat_f_select);
+                        // Select new seat
+                        viewModel.setSelectedSeat(seatId);
+                        if (info != null) {
+                            seat.setBackgroundResource(info.selectedBackground);
+                        }
+                    }
+                }
+            });
         }
     }
 }

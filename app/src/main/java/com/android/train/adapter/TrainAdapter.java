@@ -15,6 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.train.R;
 import com.android.train.model.TrainModel;
 import com.android.train.ui.booking.BookingActivity;
+import com.android.train.ui.login.LoginActivity;
+import com.android.train.utils.AuthUtil;
+import com.android.train.utils.PreferencesUtil;
+import com.android.train.utils.ToastUtil;
 
 import java.util.List;
 
@@ -54,28 +58,33 @@ public class TrainAdapter extends RecyclerView.Adapter<TrainAdapter.TrainViewHol
         setTicketStatus(holder.firstClassTextView, train.getFirstClassStatus());
         setTicketStatus(holder.businessClassTextView, train.getBusinessClass());
 
-//        if (train.getTrainNumber().contains("G")) {
-            holder.trainNumberTextView.setText(train.getTrainNumber());
-//        }
+        holder.trainNumberTextView.setText(train.getTrainNumber());
 
         // Set click listener for the entire item
         holder.itemView.setOnClickListener(v -> {
             int adapterPosition = holder.getAdapterPosition();
             if (adapterPosition == RecyclerView.NO_POSITION) return;
 
-            Intent intent = new Intent(context, BookingActivity.class);
-            intent.putExtra("trainNumber", train.getTrainNumber());
-            intent.putExtra("departureStation", train.getDepartureStation());
-            intent.putExtra("arrivalStation", train.getArrivalStation());
-            intent.putExtra("departureTime", train.getDepartureTime());
-            intent.putExtra("arrivalTime", train.getArrivalTime());
-            intent.putExtra("durationTime", train.getDuration());
-            int[] pricesArray = new int[]{
-                    train.getSecondPrice(),
-                    train.getFirstPrice(),
-                    train.getBusinessPrice(),
-            };
-            intent.putExtra("prices", pricesArray);
+            Intent intent;
+            if (!AuthUtil.isLoggedIn(context)) {
+                ToastUtil.showToast(context, "请先登录");
+                intent = new Intent(context, LoginActivity.class);
+            }
+            else {
+                intent = new Intent(context, BookingActivity.class);
+                intent.putExtra("trainNumber", train.getTrainNumber());
+                intent.putExtra("departureStation", train.getDepartureStation());
+                intent.putExtra("arrivalStation", train.getArrivalStation());
+                intent.putExtra("departureTime", train.getDepartureTime());
+                intent.putExtra("arrivalTime", train.getArrivalTime());
+                intent.putExtra("durationTime", train.getDuration());
+                int[] pricesArray = new int[]{
+                        train.getSecondPrice(),
+                        train.getFirstPrice(),
+                        train.getBusinessPrice(),
+                };
+                intent.putExtra("prices", pricesArray);
+            }
 
             context.startActivity(intent);
         });
