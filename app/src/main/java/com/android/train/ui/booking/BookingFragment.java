@@ -38,6 +38,8 @@ public class BookingFragment extends Fragment {
     private ImageView currentSelectedSeat = null;
     private Intent intent;
 
+    private String number;
+
     public static BookingFragment newInstance() {
         return new BookingFragment();
     }
@@ -50,8 +52,10 @@ public class BookingFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         binding = FragmentBookingBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         // 适配刘海屏 & 状态栏安全区域
@@ -75,6 +79,16 @@ public class BookingFragment extends Fragment {
         String idCard = PreferencesUtil.getString(requireContext(), "idCard");
         binding.passengerName.setText(realName);
         binding.idNumber.setText(maskIdCard(idCard));
+
+        binding.btnSubmitOrder.setOnClickListener(v -> {
+            if(number == null) {
+                ToastUtil.showToast(requireContext(), "请选择座位");
+                return;
+            }
+            String selected = "坐席等级 : " + binding.seatClass.getText() + "座位号" + number;
+            ToastUtil.showToast(requireContext(), "订单处理中..."+selected);
+
+        });
 
         return root;
     }
@@ -107,15 +121,16 @@ public class BookingFragment extends Fragment {
 
     private void initSeat() {
         int[] prices = intent.getIntArrayExtra("prices");
-        String[] levels = new String[] { "二等","一等","商务" };
+        String[] levels = new String[]{"二等", "一等", "商务"};
         List<SeatOption> seatList = new ArrayList<>();
         for (int i = 0; i < Objects.requireNonNull(prices).length; i++) {
             seatList.add(new SeatOption(levels[i], prices[i], true));
         }
 
-        SeatAdapter seatAdapter = new SeatAdapter(seatList, seatOption ->
-                ToastUtil.showToast(requireContext(), "选择：" + seatOption.getSeatType())
-        );
+        SeatAdapter seatAdapter = new SeatAdapter(seatList, seatOption -> {
+            binding.seatClass.setText(seatOption.getSeatType());
+            ToastUtil.showToast(requireContext(), "选择：" + seatOption.getSeatType());
+        });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
         binding.seatLevelList.setLayoutManager(layoutManager);
@@ -151,14 +166,19 @@ public class BookingFragment extends Fragment {
     private void resetSeatBackground(ImageView seat) {
         // 根据座位ID重置为未选中状态的背景
         if (seat.getId() == R.id.seat_a) {
+            number = null;
             seat.setBackgroundResource(R.drawable.seat_a);
         } else if (seat.getId() == R.id.seat_b) {
+            number = null;
             seat.setBackgroundResource(R.drawable.seat_b);
         } else if (seat.getId() == R.id.seat_c) {
+            number = null;
             seat.setBackgroundResource(R.drawable.seat_c);
         } else if (seat.getId() == R.id.seat_d) {
+            number = null;
             seat.setBackgroundResource(R.drawable.seat_d);
         } else if (seat.getId() == R.id.seat_f) {
+            number = null;
             seat.setBackgroundResource(R.drawable.seat_f);
         }
     }
@@ -166,14 +186,19 @@ public class BookingFragment extends Fragment {
     private void setSeatSelectedBackground(ImageView seat) {
         // 根据座位ID设置为选中状态的背景
         if (seat.getId() == R.id.seat_a) {
+            number = "A";
             seat.setBackgroundResource(R.drawable.seat_a_select);
         } else if (seat.getId() == R.id.seat_b) {
+            number = "B";
             seat.setBackgroundResource(R.drawable.seat_b_select);
         } else if (seat.getId() == R.id.seat_c) {
+            number = "C";
             seat.setBackgroundResource(R.drawable.seat_c_select);
         } else if (seat.getId() == R.id.seat_d) {
+            number = "D";
             seat.setBackgroundResource(R.drawable.seat_d_select);
         } else if (seat.getId() == R.id.seat_f) {
+            number = "F";
             seat.setBackgroundResource(R.drawable.seat_f_select);
         }
     }
