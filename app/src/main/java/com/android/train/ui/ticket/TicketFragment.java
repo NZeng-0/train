@@ -15,6 +15,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.android.train.R;
 import com.android.train.api.RetrofitClient;
@@ -26,6 +28,7 @@ import com.android.train.ui.query.QueryViewModelFactory;
 import com.android.train.utils.DateUtils;
 import com.android.train.utils.PreferencesUtil;
 import com.android.train.utils.ToastUtil;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import retrofit2.Retrofit;
 
@@ -84,6 +87,8 @@ public class TicketFragment extends Fragment {
 
         observeData();
 
+        binding.btnPay.setOnClickListener(v -> showPaymentBottomSheet());
+
         return root;
     }
 
@@ -132,4 +137,36 @@ public class TicketFragment extends Fragment {
     private void back(){
         requireActivity().onBackPressed();
     }
+
+    private void showPaymentBottomSheet() {
+        // 创建 BottomSheetDialog
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(requireContext());
+
+        // 加载布局
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.bottom_pay, null);
+        bottomSheetDialog.setContentView(view);
+
+        // 绑定按钮
+        LinearLayout btnWeChatPay = view.findViewById(R.id.btn_wechat_pay);
+        LinearLayout btnAliPay = view.findViewById(R.id.btn_alipay);
+        Button btnCancel = view.findViewById(R.id.btn_cancel);
+
+        // 处理支付点击事件
+        btnWeChatPay.setOnClickListener(v -> {
+            ToastUtil.showToast(requireContext(), "微信支付");
+            bottomSheetDialog.dismiss(); // 关闭弹窗
+        });
+
+        btnAliPay.setOnClickListener(v -> {
+            ToastUtil.showToast(requireContext(), "支付宝支付");
+            bottomSheetDialog.dismiss();
+        });
+
+        // 取消按钮
+        btnCancel.setOnClickListener(v -> bottomSheetDialog.dismiss());
+
+        // 显示弹窗
+        bottomSheetDialog.show();
+    }
+
 }
