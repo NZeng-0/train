@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +22,12 @@ import android.widget.ImageView;
 
 import com.android.train.R;
 import com.android.train.adapter.SeatAdapter;
+import com.android.train.api.RetrofitClient;
+import com.android.train.api.service.RelationService;
 import com.android.train.databinding.FragmentBookingBinding;
 import com.android.train.model.SeatInfo;
 import com.android.train.model.SeatOption;
+import com.android.train.pojo.Seat;
 import com.android.train.ui.ticket.TicketActivity;
 import com.android.train.utils.PreferencesUtil;
 import com.android.train.utils.ToastUtil;
@@ -34,10 +38,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import retrofit2.Retrofit;
+
 public class BookingFragment extends Fragment {
     private BookingViewModel viewModel;
     private FragmentBookingBinding binding;
     private Intent intent;
+    private String trainNumber, departureStation, arrivalStation,
+            departureTime, arrivalTime, durationTime;
 
     public static BookingFragment newInstance() {
         return new BookingFragment();
@@ -46,7 +54,13 @@ public class BookingFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(BookingViewModel.class);
+
+        Retrofit retrofit = RetrofitClient.getClient(requireContext());
+
+        RelationService relationService = retrofit.create(RelationService.class);
+        BookingViewModelFactory factory = new BookingViewModelFactory(relationService);
+
+        viewModel = new ViewModelProvider(this, factory).get(BookingViewModel.class);
         viewModel.initSeatInfoMap();
     }
 
@@ -55,8 +69,7 @@ public class BookingFragment extends Fragment {
     public View onCreateView(
             @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState)
-    {
+            @Nullable Bundle savedInstanceState) {
         binding = FragmentBookingBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         // 适配刘海屏 & 状态栏安全区域
@@ -71,6 +84,13 @@ public class BookingFragment extends Fragment {
         toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
 
         intent = requireActivity().getIntent();
+        String trainId = intent.getStringExtra("trainId");
+        trainNumber = intent.getStringExtra("trainNumber");
+        departureStation = intent.getStringExtra("departureStation");
+        arrivalStation = intent.getStringExtra("arrivalStation");
+        departureTime = intent.getStringExtra("departureTime");
+        arrivalTime = intent.getStringExtra("arrivalTime");
+        durationTime = intent.getStringExtra("durationTime");
 
         initTrain();
         initSeat();
@@ -83,13 +103,14 @@ public class BookingFragment extends Fragment {
         binding.idNumber.setText(BookingViewModel.maskIdCard(idCard));
 
         binding.btnSubmitOrder.setOnClickListener(v -> {
-            if(!viewModel.validateOrderSubmission()) {
+            String seat = viewModel.getSelectedSeatNumber().getValue();
+            if (seat == null) {
                 ToastUtil.showToast(requireContext(), "请选择座位");
                 return;
             }
             ToastUtil.showToast(requireContext(), "订单处理中...");
-            Intent intent = new Intent(requireContext(), TicketActivity.class);
-            startActivity(intent);
+
+            viewModel.getSeatInfo(trainId, (String) binding.seatClass.getText(), seat);
         });
 
         return root;
@@ -108,6 +129,18 @@ public class BookingFragment extends Fragment {
 
         // Observe seat visibility changes
         viewModel.getSeatVisibility().observe(getViewLifecycleOwner(), this::updateSeatVisibility);
+
+        viewModel.getSeatLiveData().observe(requireActivity(), seat -> {
+            if (seat != null) {
+                String carriage = seat.getCarriageNumber();
+                String trainSeat = seat.getSeatNumber();
+                String price = String.valueOf(seat.getPrice());
+
+                goTicket((String) binding.seatClass.getText(), carriage, trainSeat, price);
+            } else {
+                Log.e("BookingViewModel", "座位信息为空");
+            }
+        });
     }
 
     private void updateSeatVisibility(Map<Integer, Boolean> visibilityMap) {
@@ -136,21 +169,12 @@ public class BookingFragment extends Fragment {
     }
 
     private void initTrain() {
-        if (intent != null) {
-            String trainNumber = intent.getStringExtra("trainNumber");
-            String departureStation = intent.getStringExtra("departureStation");
-            String arrivalStation = intent.getStringExtra("arrivalStation");
-            String departureTime = intent.getStringExtra("departureTime");
-            String arrivalTime = intent.getStringExtra("arrivalTime");
-            String durationTime = intent.getStringExtra("durationTime");
-
-            binding.tvDepartureTime.setText(departureTime);
-            binding.tvArrivalTime.setText(arrivalTime);
-            binding.tvDepartureStation.setText(departureStation);
-            binding.tvArrivalStation.setText(arrivalStation);
-            binding.tvTrainNumber.setText(trainNumber);
-            binding.tvDuration.setText(durationTime);
-        }
+        binding.tvDepartureTime.setText(departureTime);
+        binding.tvArrivalTime.setText(arrivalTime);
+        binding.tvDepartureStation.setText(departureStation);
+        binding.tvArrivalStation.setText(arrivalStation);
+        binding.tvTrainNumber.setText(trainNumber);
+        binding.tvDuration.setText(durationTime);
     }
 
     private void initSeat() {
@@ -163,7 +187,6 @@ public class BookingFragment extends Fragment {
 
         SeatAdapter seatAdapter = new SeatAdapter(seatList, seatOption -> {
             viewModel.updateSeatState(seatOption.getSeatType());
-            ToastUtil.showToast(requireContext(), "选择：" + seatOption.getSeatType());
         });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -218,5 +241,20 @@ public class BookingFragment extends Fragment {
                 }
             });
         }
+    }
+
+    private void goTicket(String level, String carriage, String trainSeat, String price) {
+        Intent intent = new Intent(requireContext(), TicketActivity.class);
+        intent.putExtra("trainNumber", trainNumber);
+        intent.putExtra("departureStation", departureStation);
+        intent.putExtra("arrivalStation", arrivalStation);
+        intent.putExtra("departureTime", departureTime);
+        intent.putExtra("arrivalTime", arrivalTime);
+        intent.putExtra("durationTime", durationTime);
+        intent.putExtra("level", level);
+        intent.putExtra("carriage", carriage);
+        intent.putExtra("trainSeat", trainSeat);
+        intent.putExtra("price", price);
+        startActivity(intent);
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 
 public class SeatAdapter extends RecyclerView.Adapter<SeatAdapter.SeatViewHolder> {
 
-    private List<SeatOption> seatList;
+    private final List<SeatOption> seatList;
     private int selectedPosition = RecyclerView.SCROLLBAR_POSITION_DEFAULT;
 
     public interface OnSeatClickListener {

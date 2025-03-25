@@ -1,6 +1,11 @@
 package com.android.train.utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * 日期格式化工具栏
@@ -44,6 +49,45 @@ public class DateUtils {
             case Calendar.FRIDAY: return "周五";
             case Calendar.SATURDAY: return "周六";
             default: return "";
+        }
+    }
+
+    public static String convertToFullDate(String shortDate) {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("MM.dd", Locale.CHINA);
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+
+        try {
+            Date date = inputFormat.parse(shortDate);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(Objects.requireNonNull(date));
+
+            // 需要补充年份，假设使用当前年份
+            int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+            calendar.set(Calendar.YEAR, currentYear);
+
+            return outputFormat.format(calendar.getTime()); // 转换为 yyyy-MM-dd
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null; // 解析失败返回 null
+        }
+    }
+
+    public static String convertToCN(String shortDate) {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA);
+
+        try {
+            Date date = inputFormat.parse(shortDate);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(Objects.requireNonNull(date));
+
+            // 获取星期几
+            String weekDay = getWeekDay(calendar.get(Calendar.DAY_OF_WEEK));
+
+            return outputFormat.format(date) + " " + weekDay;
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

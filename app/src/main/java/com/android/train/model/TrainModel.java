@@ -2,6 +2,7 @@ package com.android.train.model;
 
 
 public class TrainModel {
+    private String id;
     private String departureTime;
     private String trainNumber;
     private String arrivalTime;
@@ -18,6 +19,7 @@ public class TrainModel {
     private Integer secondPrice;
 
     public TrainModel(
+            String id,
             String departureTime,
             String trainNumber,
             String arrivalTime,
@@ -31,6 +33,7 @@ public class TrainModel {
             Integer firstPrice,
             Integer secondPrice
     ) {
+        this.id = id;
         this.departureTime = departureTime;
         this.trainNumber = trainNumber;
         this.arrivalTime = arrivalTime;
@@ -46,6 +49,15 @@ public class TrainModel {
     }
 
     // Getters and setters
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getDepartureTime() {
         return departureTime;
     }

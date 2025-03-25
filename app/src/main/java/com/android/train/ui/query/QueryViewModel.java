@@ -1,5 +1,6 @@
 package com.android.train.ui.query;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import com.android.train.model.DateItem;
 import com.android.train.model.TrainModel;
 import com.android.train.pojo.Relation;
 import com.android.train.pojo.StationInfo;
+import com.android.train.utils.PreferencesUtil;
 import com.google.gson.Gson;
 
 import java.text.ParseException;
@@ -36,7 +38,10 @@ public class QueryViewModel extends ViewModel {
 
     private final MutableLiveData<List<TrainModel>> trainModels = new MutableLiveData<>();
 
-    public QueryViewModel(RelationService relationService) {
+    private final Context context;
+
+    public QueryViewModel(Context context, RelationService relationService) {
+    this.context = context;
         this.relationService = relationService;
     }
 
@@ -65,9 +70,9 @@ public class QueryViewModel extends ViewModel {
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<List<Relation>> apiResponse = response.body();
                     if (apiResponse.getCode() == 200 && apiResponse.getRows() != null) {
-                        Log.d("HomeViewModel", "成功获取车次列表: " + apiResponse.getRows().toString() + " 个车站");
                         // 将API返回数据转换为TrainModel列表
                         trainModels.setValue(convertToTrainModels(apiResponse.getRows()));
+                        PreferencesUtil.putString(context,"selectDate", saleTime);
                     } else {
                         Log.e("HomeViewModel", "接口返回失败");
                     }
@@ -99,6 +104,7 @@ public class QueryViewModel extends ViewModel {
 
             // 创建新的TrainModel对象
             TrainModel trainModel = new TrainModel(
+                    relation.getId(),
                     departTime,                 // 出发时间
                     relation.getTrainNumber(),  // 车次号
                     arriveTime,                 // 到达时间

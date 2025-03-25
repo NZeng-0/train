@@ -1,7 +1,9 @@
 package com.android.train.api.service;
 
 import com.android.train.api.ApiResponse;
+import com.android.train.api.AjaxResult;
 import com.android.train.pojo.Relation;
+import com.android.train.pojo.Seat;
 
 import java.util.List;
 
@@ -18,5 +20,12 @@ public interface RelationService {
             @Query("startRegion") String departure, // 出发地
             @Query("endRegion") String arrival,     // 到达地
             @Query("saleTime") String saleTime      // 到达地
+    );
+
+    @GET("/train/seat/byTrain")
+    Call<AjaxResult<Seat>> getSeatByTrainAndNumber(
+            @Query("id") String id,
+            @Query("type") String type,
+            @Query("number") String number
     );
 }

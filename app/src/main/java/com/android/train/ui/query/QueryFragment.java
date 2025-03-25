@@ -60,7 +60,7 @@ public class QueryFragment extends Fragment {
         // 初始化 Retrofit
         Retrofit retrofit = RetrofitClient.getClient(requireContext());
         RelationService relationService = retrofit.create(RelationService.class);
-        QueryViewModelFactory factory = new QueryViewModelFactory(relationService);
+        QueryViewModelFactory factory = new QueryViewModelFactory(requireContext(), relationService);
         viewModel = new ViewModelProvider(this, factory).get(QueryViewModel.class);
         utilViewModel = new ViewModelProvider(this).get(UtilViewModel.class);
     }

@@ -11,14 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.train.R;
 import com.android.train.model.DateItem;
+import com.android.train.utils.DateUtils;
 import com.android.train.viewmodel.UtilViewModel;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class DateAdapter extends RecyclerView.Adapter<DateAdapter.ViewHolder> {
     private final List<DateItem> dateList;
@@ -65,7 +61,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.ViewHolder> {
                 notifyItemChanged(selectedPosition);
                 selectedPosition = newPosition;
                 notifyItemChanged(selectedPosition);
-                utilViewModel.setSelectedDate(convertToFullDate(dateList.get(selectedPosition).getDate()));
+                utilViewModel.setSelectedDate(DateUtils.convertToFullDate(dateList.get(selectedPosition).getDate()));
             }
         });
     }
@@ -75,25 +71,7 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.ViewHolder> {
         return dateList.size();
     }
 
-    public String convertToFullDate(String shortDate) {
-        SimpleDateFormat inputFormat = new SimpleDateFormat("MM.dd", Locale.CHINA);
-        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
 
-        try {
-            Date date = inputFormat.parse(shortDate);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-
-            // 需要补充年份，假设使用当前年份
-            int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-            calendar.set(Calendar.YEAR, currentYear);
-
-            return outputFormat.format(calendar.getTime()); // 转换为 yyyy-MM-dd
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null; // 解析失败返回 null
-        }
-    }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView dayOfWeek, date;

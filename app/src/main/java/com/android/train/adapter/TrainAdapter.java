@@ -72,6 +72,7 @@ public class TrainAdapter extends RecyclerView.Adapter<TrainAdapter.TrainViewHol
             }
             else {
                 intent = new Intent(context, BookingActivity.class);
+                intent.putExtra("trainId", train.getId());
                 intent.putExtra("trainNumber", train.getTrainNumber());
                 intent.putExtra("departureStation", train.getDepartureStation());
                 intent.putExtra("arrivalStation", train.getArrivalStation());

@@ -1,4 +1,4 @@
-package com.android.train.model;
+package com.android.train.api;
 
 import androidx.annotation.Nullable;
 

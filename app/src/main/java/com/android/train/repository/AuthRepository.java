@@ -7,10 +7,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.android.train.api.service.UserService;
-import com.android.train.model.AjaxResult;
+import com.android.train.api.AjaxResult;
 import com.android.train.model.UserRequest;
 import com.android.train.pojo.User;
-import com.android.train.utils.PreferencesUtil;
 
 import retrofit2.Call;
 import retrofit2.Callback;

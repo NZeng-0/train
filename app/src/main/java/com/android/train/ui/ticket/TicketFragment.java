@@ -5,6 +5,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,13 +19,17 @@ import android.view.ViewGroup;
 import com.android.train.R;
 import com.android.train.databinding.FragmentStationBinding;
 import com.android.train.databinding.FragmentTicketBinding;
+import com.android.train.utils.DateUtils;
+import com.android.train.utils.PreferencesUtil;
 import com.android.train.utils.ToastUtil;
 
 public class TicketFragment extends Fragment {
 
     private TicketViewModel viewModel;
-
     private FragmentTicketBinding binding;
+    private Intent intent;
+    private String trainNumber, departureStation, arrivalStation, departureTime,
+            arrivalTime, durationTime, level,carriage,trainSeat, price;
 
     public static TicketFragment newInstance() {
         return new TicketFragment();
@@ -52,9 +57,40 @@ public class TicketFragment extends Fragment {
 
         viewModel.getRemainingTime().observe(getViewLifecycleOwner(), binding.tvRemainingTime::setText);
 
+        intent = requireActivity().getIntent();
+        trainNumber = intent.getStringExtra("trainNumber");
+        departureStation = intent.getStringExtra("departureStation");
+        arrivalStation = intent.getStringExtra("arrivalStation");
+        departureTime = intent.getStringExtra("departureTime");
+        arrivalTime = intent.getStringExtra("arrivalTime");
+        durationTime = intent.getStringExtra("durationTime");
+        level = intent.getStringExtra("level");
+        carriage = intent.getStringExtra("carriage");
+        trainSeat = intent.getStringExtra("trainSeat");
+        price = intent.getStringExtra("price");
+
         setupListeners();
+        init();
 
         return root;
+    }
+
+
+    private void init() {
+        binding.tvDepartureTime.setText(departureTime);
+        binding.tvArrivalTime.setText(arrivalTime);
+        binding.tvDepartureStation.setText(departureStation);
+        binding.tvArrivalStation.setText(arrivalStation);
+        binding.tvTrainNumber.setText(trainNumber);
+        binding.tvDuration.setText(String.format("历时%s", durationTime));
+        binding.tvPassengerName.setText(PreferencesUtil.getString(requireContext(),"realName"));
+        binding.tvSeatInfo.setText(String.format("%s座 %s车 %s号", level, carriage, trainSeat));
+        binding.tvTicketPrice.setText(String.format("￥%s", price));
+        binding.tvTotalPrice.setText(String.format("￥%s", price));
+
+        String date = PreferencesUtil.getString(requireContext(), "selectDate");
+
+        binding.tvDepartureDate.setText(String.format("发车时间: %s", DateUtils.convertToCN(date)));
     }
 
     private void setupListeners() {
