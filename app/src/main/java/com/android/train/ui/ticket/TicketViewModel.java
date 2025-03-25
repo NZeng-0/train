@@ -33,9 +33,6 @@ public class TicketViewModel extends ViewModel {
     public TicketViewModel(Context context, RelationService relationService) {
         this.context = context;
         this.relationService = relationService;
-    }
-
-    public TicketViewModel() {
         startTimer();
     }
 

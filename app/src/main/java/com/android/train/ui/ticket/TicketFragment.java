@@ -21,10 +21,8 @@ import android.widget.LinearLayout;
 import com.android.train.R;
 import com.android.train.api.RetrofitClient;
 import com.android.train.api.service.RelationService;
-import com.android.train.databinding.FragmentStationBinding;
 import com.android.train.databinding.FragmentTicketBinding;
-import com.android.train.ui.query.QueryViewModel;
-import com.android.train.ui.query.QueryViewModelFactory;
+import com.android.train.pojo.Order;
 import com.android.train.utils.DateUtils;
 import com.android.train.utils.PreferencesUtil;
 import com.android.train.utils.ToastUtil;
@@ -37,7 +35,7 @@ public class TicketFragment extends Fragment {
     private TicketViewModel viewModel;
     private FragmentTicketBinding binding;
     private Intent intent;
-    private String trainNumber, departureStation, arrivalStation, departureTime,
+    private String realName, trainNumber, departureStation, arrivalStation, departureTime,
             arrivalTime, durationTime, level,carriage,trainSeat, price, seatId;
 
     public static TicketFragment newInstance() {
@@ -66,6 +64,8 @@ public class TicketFragment extends Fragment {
             binding.getRoot().setPadding(16, systemBarsInsets.top, 16, systemBarsInsets.bottom);
             return insets;
         });
+
+        realName = PreferencesUtil.getString(requireContext(),"realName");
 
         viewModel.getRemainingTime().observe(getViewLifecycleOwner(), binding.tvRemainingTime::setText);
 
@@ -102,7 +102,6 @@ public class TicketFragment extends Fragment {
         });
     }
 
-
     private void init() {
         binding.tvDepartureTime.setText(departureTime);
         binding.tvArrivalTime.setText(arrivalTime);
@@ -110,7 +109,7 @@ public class TicketFragment extends Fragment {
         binding.tvArrivalStation.setText(arrivalStation);
         binding.tvTrainNumber.setText(trainNumber);
         binding.tvDuration.setText(String.format("历时%s", durationTime));
-        binding.tvPassengerName.setText(PreferencesUtil.getString(requireContext(),"realName"));
+        binding.tvPassengerName.setText(realName);
         binding.tvSeatInfo.setText(String.format("%s座 %s车 %s号", level, carriage, trainSeat));
         binding.tvTicketPrice.setText(String.format("￥%s", price));
         binding.tvTotalPrice.setText(String.format("￥%s", price));
@@ -154,11 +153,13 @@ public class TicketFragment extends Fragment {
         // 处理支付点击事件
         btnWeChatPay.setOnClickListener(v -> {
             ToastUtil.showToast(requireContext(), "微信支付");
+            collectData();
             bottomSheetDialog.dismiss(); // 关闭弹窗
         });
 
         btnAliPay.setOnClickListener(v -> {
             ToastUtil.showToast(requireContext(), "支付宝支付");
+            collectData();
             bottomSheetDialog.dismiss();
         });
 
@@ -169,4 +170,10 @@ public class TicketFragment extends Fragment {
         bottomSheetDialog.show();
     }
 
+    private void collectData() {
+        // TODO 创建订单
+        String id = PreferencesUtil.getString(requireContext(), "id");
+//        Ticket ticket = new Ticket(realName,0,carriage, trainSeat,id);
+//        System.out.println(ticket);
+    }
 }

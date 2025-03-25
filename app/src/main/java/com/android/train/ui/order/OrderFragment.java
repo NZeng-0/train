@@ -1,4 +1,4 @@
-package com.android.train.ui.notifications;
+package com.android.train.ui.order;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,18 +9,18 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.android.train.databinding.FragmentNotificationsBinding;
+import com.android.train.databinding.FragmentOrderBinding;
 
-public class NotificationsFragment extends Fragment {
+public class OrderFragment extends Fragment {
 
-    private FragmentNotificationsBinding binding;
+    private FragmentOrderBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        NotificationsViewModel notificationsViewModel =
-                new ViewModelProvider(this).get(NotificationsViewModel.class);
+        OrderViewModel orderViewModel =
+                new ViewModelProvider(this).get(OrderViewModel.class);
 
-        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
+        binding = FragmentOrderBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         return root;
