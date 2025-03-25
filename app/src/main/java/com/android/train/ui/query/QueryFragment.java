@@ -15,12 +15,14 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ViewSwitcher;
 
+import com.android.train.R;
 import com.android.train.adapter.DateAdapter;
 import com.android.train.adapter.TrainAdapter;
 import com.android.train.api.RetrofitClient;
@@ -45,7 +47,7 @@ public class QueryFragment extends Fragment {
     private RecyclerView trainListView;
     private UtilViewModel utilViewModel;
     private String saleTime;
-    private  int page = 1;
+    private int page = 1;
     private int size = 20;
     private String start, end;
 
@@ -99,6 +101,11 @@ public class QueryFragment extends Fragment {
 
         viewModel.loadStationList(page, size, start, end, saleTime);
 
+        binding.swipeRefresh.setOnRefreshListener(() -> {
+            viewModel.loadStationList(page, size, start, end, saleTime);
+            binding.swipeRefresh.setRefreshing(false);
+        });
+
         observe();
 
         return root;
@@ -107,14 +114,21 @@ public class QueryFragment extends Fragment {
     private void observe() {
 
         viewModel.getTrainModels().observe(getViewLifecycleOwner(), models -> {
+            // 获取当前显示的 View
+            View currentView = viewSwitcher.getCurrentView();
+
             if (models.isEmpty()) {
-                if (viewSwitcher.getCurrentView() != noDataImage) {
-                    viewSwitcher.showNext();
+                // 当前显示的不是 "无数据" 图片时，切换到 "无数据"
+                if (currentView.getId() != R.id.no_data_image) {
+                    viewSwitcher.setDisplayedChild(1); // 切换到 noDataImage
                 }
             } else {
-                if (viewSwitcher.getCurrentView() != trainListView) {
-                    viewSwitcher.showPrevious(); // 切换回列表
+                // 当前显示的不是 "列表" 时，切换到 "列表"
+                if (currentView.getId() != R.id.swipe_refresh) {
+                    viewSwitcher.setDisplayedChild(0); // 切换到 RecyclerView
                 }
+
+                // 更新 RecyclerView 数据
                 if (trainAdapter != null) {
                     trainAdapter.updateData(models);
                 } else {
@@ -122,6 +136,7 @@ public class QueryFragment extends Fragment {
                 }
             }
         });
+
 
         utilViewModel.getSelectedDate().observe(getViewLifecycleOwner(), date -> {
             saleTime = date;
