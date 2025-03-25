@@ -28,4 +28,7 @@ public interface RelationService {
             @Query("type") String type,
             @Query("number") String number
     );
+
+    @GET("/train/seat/cancel")
+    Call<AjaxResult<Void>> cancelSeatTicket(@Query("id") String id);
 }

@@ -17,11 +17,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.train.R;
+import com.android.train.api.RetrofitClient;
+import com.android.train.api.service.RelationService;
 import com.android.train.databinding.FragmentStationBinding;
 import com.android.train.databinding.FragmentTicketBinding;
+import com.android.train.ui.query.QueryViewModel;
+import com.android.train.ui.query.QueryViewModelFactory;
 import com.android.train.utils.DateUtils;
 import com.android.train.utils.PreferencesUtil;
 import com.android.train.utils.ToastUtil;
+
+import retrofit2.Retrofit;
 
 public class TicketFragment extends Fragment {
 
@@ -29,7 +35,7 @@ public class TicketFragment extends Fragment {
     private FragmentTicketBinding binding;
     private Intent intent;
     private String trainNumber, departureStation, arrivalStation, departureTime,
-            arrivalTime, durationTime, level,carriage,trainSeat, price;
+            arrivalTime, durationTime, level,carriage,trainSeat, price, seatId;
 
     public static TicketFragment newInstance() {
         return new TicketFragment();
@@ -38,8 +44,11 @@ public class TicketFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(this).get(TicketViewModel.class);
-        // TODO: Use the ViewModel
+
+        Retrofit retrofit = RetrofitClient.getClient(requireContext());
+        RelationService relationService = retrofit.create(RelationService.class);
+        TicketViewModelFactory factory = new TicketViewModelFactory(requireContext(), relationService);
+        viewModel = new ViewModelProvider(this, factory).get(TicketViewModel.class);
     }
 
     @Nullable
@@ -64,6 +73,7 @@ public class TicketFragment extends Fragment {
         departureTime = intent.getStringExtra("departureTime");
         arrivalTime = intent.getStringExtra("arrivalTime");
         durationTime = intent.getStringExtra("durationTime");
+        seatId = intent.getStringExtra("seatId");
         level = intent.getStringExtra("level");
         carriage = intent.getStringExtra("carriage");
         trainSeat = intent.getStringExtra("trainSeat");
@@ -72,7 +82,19 @@ public class TicketFragment extends Fragment {
         setupListeners();
         init();
 
+        observeData();
+
         return root;
+    }
+
+    private void observeData(){
+        viewModel.getIsTimeout().observe(getViewLifecycleOwner(),timeout->{
+            if(timeout){
+                ToastUtil.showToast(requireContext(),"订单超时请重新提交");
+                // 定时超时后返回上一个也没
+                requireActivity().onBackPressed();
+            }
+        });
     }
 
 
@@ -94,14 +116,20 @@ public class TicketFragment extends Fragment {
     }
 
     private void setupListeners() {
-        binding.btnBack.setOnClickListener(v -> requireActivity().onBackPressed());
+        binding.btnBack.setOnClickListener(v -> back() );
 
         binding.btnPay.setOnClickListener(v -> {
             ToastUtil.showToast(requireContext(), "开始支付流程");
         });
 
         binding.btnCancel.setOnClickListener(v -> {
-            ToastUtil.showToast(requireContext(), "取消订单");
+            viewModel.cancelSeat(seatId);
+            ToastUtil.showToast(requireContext(), "取消成功");
+            back();
         });
+    }
+
+    private void back(){
+        requireActivity().onBackPressed();
     }
 }

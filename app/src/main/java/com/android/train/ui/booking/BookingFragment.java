@@ -135,8 +135,9 @@ public class BookingFragment extends Fragment {
                 String carriage = seat.getCarriageNumber();
                 String trainSeat = seat.getSeatNumber();
                 String price = String.valueOf(seat.getPrice());
+                String id = String.valueOf(seat.getId());
 
-                goTicket((String) binding.seatClass.getText(), carriage, trainSeat, price);
+                goTicket((String) binding.seatClass.getText(), carriage, trainSeat, price, id);
             } else {
                 Log.e("BookingViewModel", "座位信息为空");
             }
@@ -243,7 +244,7 @@ public class BookingFragment extends Fragment {
         }
     }
 
-    private void goTicket(String level, String carriage, String trainSeat, String price) {
+    private void goTicket(String level, String carriage, String trainSeat, String price, String id) {
         Intent intent = new Intent(requireContext(), TicketActivity.class);
         intent.putExtra("trainNumber", trainNumber);
         intent.putExtra("departureStation", departureStation);
@@ -255,6 +256,7 @@ public class BookingFragment extends Fragment {
         intent.putExtra("carriage", carriage);
         intent.putExtra("trainSeat", trainSeat);
         intent.putExtra("price", price);
+        intent.putExtra("seatId", id);
         startActivity(intent);
     }
 }

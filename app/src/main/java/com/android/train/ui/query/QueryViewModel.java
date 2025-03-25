@@ -41,7 +41,7 @@ public class QueryViewModel extends ViewModel {
     private final Context context;
 
     public QueryViewModel(Context context, RelationService relationService) {
-    this.context = context;
+        this.context = context;
         this.relationService = relationService;
     }
 
@@ -62,7 +62,7 @@ public class QueryViewModel extends ViewModel {
     }
 
     public void loadStationList(int page, int size, String start, String end, String saleTime) {
-        relationService.getRelationList(page, size, start,end, saleTime).enqueue(new Callback<>() {
+        relationService.getRelationList(page, size, start, end, saleTime).enqueue(new Callback<>() {
             @Override
             public void onResponse(
                     @NonNull Call<ApiResponse<List<Relation>>> call,
@@ -72,7 +72,7 @@ public class QueryViewModel extends ViewModel {
                     if (apiResponse.getCode() == 200 && apiResponse.getRows() != null) {
                         // 将API返回数据转换为TrainModel列表
                         trainModels.setValue(convertToTrainModels(apiResponse.getRows()));
-                        PreferencesUtil.putString(context,"selectDate", saleTime);
+                        PreferencesUtil.putString(context, "selectDate", saleTime);
                     } else {
                         Log.e("HomeViewModel", "接口返回失败");
                     }
@@ -157,7 +157,7 @@ public class QueryViewModel extends ViewModel {
         }
     }
 
-    public LiveData<List<TrainModel>> getTrainModels(){
+    public LiveData<List<TrainModel>> getTrainModels() {
         return trainModels;
     }
 }
