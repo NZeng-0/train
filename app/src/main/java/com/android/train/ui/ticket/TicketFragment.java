@@ -11,6 +11,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,7 +40,6 @@ public class TicketFragment extends Fragment {
 
     private TicketViewModel viewModel;
     private FragmentTicketBinding binding;
-    private Intent intent;
     private String realName, trainNumber, departureStation, arrivalStation, departureTime,
             arrivalTime, durationTime, level, carriage, trainSeat, price, seatId, trainId, date;
 
@@ -73,7 +74,7 @@ public class TicketFragment extends Fragment {
 
         viewModel.getRemainingTime().observe(getViewLifecycleOwner(), binding.tvRemainingTime::setText);
 
-        intent = requireActivity().getIntent();
+        Intent intent = requireActivity().getIntent();
         trainNumber = intent.getStringExtra("trainNumber");
         departureStation = intent.getStringExtra("departureStation");
         arrivalStation = intent.getStringExtra("arrivalStation");
@@ -101,8 +102,20 @@ public class TicketFragment extends Fragment {
         viewModel.getIsTimeout().observe(getViewLifecycleOwner(), timeout -> {
             if (timeout) {
                 ToastUtil.showToast(requireContext(), "订单超时请重新提交");
-                // 定时超时后返回上一个也没
-                requireActivity().onBackPressed();
+                // 定时超时后返回上一个页面
+                back();
+            }
+        });
+
+        viewModel.getSuccess().observe(getViewLifecycleOwner(),success -> {
+            if (success) {
+                ToastUtil.showToast(requireContext(),"支付成功");
+
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_view);
+                navController.navigate(R.id.navigation_order);
+            } else {
+                ToastUtil.showToast(requireContext(),"支付失败，请稍后重试");
+                back();
             }
         });
     }
@@ -193,8 +206,9 @@ public class TicketFragment extends Fragment {
                 phone,
                 Long.valueOf(price),
                 pay,
-                DateUtils.getNowDateTime(),
                 1L
         );
+
+        viewModel.createOrder(order);
     }
 }

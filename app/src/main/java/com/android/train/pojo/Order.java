@@ -19,7 +19,7 @@ public class Order {
     private String trainNumber;
 
     /** 乘车日期 */
-    private Date ridingDate;
+    private String ridingDate;
 
     /** 出发站点 */
     private String departure;
@@ -67,7 +67,7 @@ public class Order {
             Long userId,
             Long trainId,
             String trainNumber,
-            Date ridingDate,
+            String ridingDate,
             String departure,
             String arrival,
             Date departureTime,
@@ -80,7 +80,6 @@ public class Order {
             String phone,
             Long amount,
             Long payType,
-            Date payTime,
             Long status)
     {
         this.userId = userId;
@@ -99,7 +98,6 @@ public class Order {
         this.phone = phone;
         this.amount = amount;
         this.payType = payType;
-        this.payTime = payTime;
         this.status = status;
     }
 
@@ -143,11 +141,11 @@ public class Order {
         this.trainNumber = trainNumber;
     }
 
-    public Date getRidingDate() {
+    public String getRidingDate() {
         return ridingDate;
     }
 
-    public void setRidingDate(Date ridingDate) {
+    public void setRidingDate(String ridingDate) {
         this.ridingDate = ridingDate;
     }
 

@@ -6,6 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -22,6 +25,13 @@ public class OrderFragment extends Fragment {
 
         binding = FragmentOrderBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        // 适配刘海屏 & 状态栏安全区域
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+            Insets systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            binding.getRoot().setPadding(16, systemBarsInsets.top, 16, systemBarsInsets.bottom);
+            return insets;
+        });
 
         return root;
     }

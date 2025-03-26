@@ -2,13 +2,16 @@ package com.android.train.api.service;
 
 import com.android.train.api.ApiResponse;
 import com.android.train.api.AjaxResult;
+import com.android.train.pojo.Order;
 import com.android.train.pojo.Relation;
 import com.android.train.pojo.Seat;
 
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface RelationService {
@@ -31,4 +34,7 @@ public interface RelationService {
 
     @GET("/train/seat/cancel")
     Call<AjaxResult<Void>> cancelSeatTicket(@Query("id") String id);
+
+    @POST("/train/order")
+    Call<AjaxResult<String>> createOrder(@Body Order order);
 }

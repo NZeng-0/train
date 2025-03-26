@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 设置AppBarConfiguration，指定哪些Fragment是顶级目标
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_profile)
+                R.id.navigation_home, R.id.navigation_order, R.id.navigation_profile)
                 .build();
 
         // 将BottomNavigationView与NavController关联

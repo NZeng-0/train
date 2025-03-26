@@ -92,9 +92,10 @@ public class DateUtils {
         }
     }
 
-    public static Date stringToDate(String str) {
+    public static String stringToDate(String str) {
         try {
-            return new SimpleDateFormat("yyyy-MM-dd",Locale.CHINA).parse(str);
+            Date date = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).parse(str);
+            return new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(date);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -109,10 +110,6 @@ public class DateUtils {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public static Date getNowDateTime() {
-        return new Date();
     }
 }
 

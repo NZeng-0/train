@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel;
 import com.android.train.api.AjaxResult;
 import com.android.train.api.ApiResponse;
 import com.android.train.api.service.RelationService;
+import com.android.train.pojo.Order;
 import com.android.train.pojo.Relation;
 import com.android.train.utils.PreferencesUtil;
 
@@ -25,6 +26,9 @@ public class TicketViewModel extends ViewModel {
 
     private final MutableLiveData<String> remainingTime = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isTimeout = new MutableLiveData<>(false);
+
+    private final MutableLiveData<Boolean> success = new MutableLiveData<>(false);
+
     private CountDownTimer countDownTimer;
 
     private Context context;
@@ -59,6 +63,10 @@ public class TicketViewModel extends ViewModel {
         return isTimeout;
     }
 
+    public LiveData<Boolean> getSuccess(){
+        return success;
+    }
+
     public void cancelSeat(String id) {
         relationService.cancelSeatTicket(id).enqueue(new Callback<>() {
             @Override
@@ -78,6 +86,32 @@ public class TicketViewModel extends ViewModel {
             @Override
             public void onFailure(@NonNull Call<AjaxResult<Void>> call, @NonNull Throwable t) {
                 Log.e("TicketViewModel", "请求失败：" + t.getMessage());
+            }
+        });
+    }
+
+    public void createOrder(Order order) {
+        relationService.createOrder(order).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(
+                    @NonNull Call<AjaxResult<String>> call,
+                    @NonNull Response<AjaxResult<String>> response)
+            {
+                if (response.isSuccessful() && response.body() != null) {
+                    AjaxResult<String> result = response.body();
+                    if (result.isSuccess()) {
+                        success.setValue(true);
+                    } else {
+                        success.setValue(false);
+                    }
+                } else {
+                    success.setValue(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AjaxResult<String>> call, Throwable t) {
+                success.setValue(false);
             }
         });
     }
