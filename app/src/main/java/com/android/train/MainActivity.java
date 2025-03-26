@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         // 将BottomNavigationView与NavController关联
-        BottomNavigationView navView = findViewById(R.id.nav_view);
+        BottomNavigationView navView = findViewById(R.id.navigation);
         NavigationUI.setupWithNavController(navView, navController);
     }
 }

@@ -115,7 +115,7 @@ public class LoginFragment extends Fragment {
         });
         authViewModel.getNavigateLiveData().observe(getViewLifecycleOwner(), navigate -> {
             if (navigate) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_view);
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.navigation);
                 navController.navigate(R.id.navigation_profile);
             }
         });

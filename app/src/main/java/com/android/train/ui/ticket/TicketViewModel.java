@@ -27,7 +27,7 @@ public class TicketViewModel extends ViewModel {
     private final MutableLiveData<String> remainingTime = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isTimeout = new MutableLiveData<>(false);
 
-    private final MutableLiveData<Boolean> success = new MutableLiveData<>(false);
+    private final MutableLiveData<Boolean> success = new MutableLiveData<>();
 
     private CountDownTimer countDownTimer;
 

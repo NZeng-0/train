@@ -7,6 +7,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -23,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.android.train.MainActivity;
 import com.android.train.R;
 import com.android.train.api.RetrofitClient;
 import com.android.train.api.service.RelationService;
@@ -113,7 +115,7 @@ public class TicketFragment extends Fragment {
             if (success) {
                 ToastUtil.showToast(requireContext(),"支付成功");
 
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_view);
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.navigation);
                 navController.navigate(R.id.navigation_order);
             } else {
                 ToastUtil.showToast(requireContext(),"支付失败，请稍后重试");
@@ -212,5 +214,11 @@ public class TicketFragment extends Fragment {
         );
 
         viewModel.createOrder(order);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }
