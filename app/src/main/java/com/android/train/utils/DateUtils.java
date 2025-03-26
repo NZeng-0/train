@@ -101,7 +101,13 @@ public class DateUtils {
         }
     }
 
-    public static Time stringToHhMm(String str) {
+    public static String timeToHhMm(String rawTime) {
+        Time time = stringToHhMm(rawTime);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.CHINA);
+        return sdf.format(new Date(time.getTime())); // 转换为 HH:mm 格式的字符串
+    }
+
+    private static Time stringToHhMm(String str) {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm",Locale.CHINA);
         try {
             long ms = Objects.requireNonNull(sdf.parse(str)).getTime();

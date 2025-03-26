@@ -1,5 +1,7 @@
 package com.android.train.pojo;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 
 public class Order {
@@ -28,10 +30,12 @@ public class Order {
     private String arrival;
 
     /** 出发时间 */
-    private Date departureTime;
+    @SerializedName("departureTime")
+    private String departureTime;
 
     /** 到达时间 */
-    private Date arrivalTime;
+    @SerializedName("arrivalTime")
+    private String arrivalTime;
 
     /** 座位类型 */
     private Long seatType;
@@ -70,8 +74,8 @@ public class Order {
             String ridingDate,
             String departure,
             String arrival,
-            Date departureTime,
-            Date arrivalTime,
+            String departureTime,
+            String arrivalTime,
             Long seatType,
             String carriageNumber,
             String seatNumber,
@@ -165,19 +169,19 @@ public class Order {
         this.arrival = arrival;
     }
 
-    public Date getDepartureTime() {
+    public String getDepartureTime() {
         return departureTime;
     }
 
-    public void setDepartureTime(Date departureTime) {
+    public void setDepartureTime(String departureTime) {
         this.departureTime = departureTime;
     }
 
-    public Date getArrivalTime() {
+    public String getArrivalTime() {
         return arrivalTime;
     }
 
-    public void setArrivalTime(Date arrivalTime) {
+    public void setArrivalTime(String arrivalTime) {
         this.arrivalTime = arrivalTime;
     }
 

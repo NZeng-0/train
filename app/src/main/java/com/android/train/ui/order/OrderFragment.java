@@ -32,18 +32,10 @@ import retrofit2.Retrofit;
 
 public class OrderFragment extends Fragment {
 
-    private OrderViewModel viewModel;
     private FragmentOrderBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
-        Retrofit retrofit = RetrofitClient.getClient(requireContext());
-
-        RelationService relationService = retrofit.create(RelationService.class);
-        OrderViewModelFactory factory = new OrderViewModelFactory(requireContext(), relationService);
-
-        viewModel = new ViewModelProvider(this, factory).get(OrderViewModel.class);
 
         binding = FragmentOrderBinding.inflate(inflater, container, false);
         View root = binding.getRoot();

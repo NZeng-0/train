@@ -1,5 +1,7 @@
 package com.android.train.ui.ticket;
 
+import static com.android.train.utils.DateUtils.timeToHhMm;
+
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -196,8 +198,8 @@ public class TicketFragment extends Fragment {
                 DateUtils.stringToDate(date),
                 departureStation,
                 arrivalStation,
-                DateUtils.stringToHhMm(departureTime),
-                DateUtils.stringToHhMm(arrivalTime),
+                DateUtils.timeToHhMm(departureTime),
+                DateUtils.timeToHhMm(arrivalTime),
                 Long.valueOf(To.seatToNumber(level)),
                 carriage,
                 trainSeat,

@@ -39,5 +39,5 @@ public interface RelationService {
     Call<AjaxResult<String>> createOrder(@Body Order order);
 
     @GET("/train/order/my")
-    Call<AjaxResult<List<Order>>> getOrderList(@Query("id") String id);
+    Call<ApiResponse<List<Order>>> getOrderList(@Query("id") String id);
 }

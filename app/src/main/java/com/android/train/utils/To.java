@@ -24,7 +24,7 @@ public class To {
     }
 
     /**
-     * 座位等级装数字
+     * 座位等级转数字
      * @param number
      * @return
      */
@@ -36,6 +36,22 @@ public class To {
                 return "1";
             default:
                 return "2";
+        }
+    }
+
+    /**
+     * 座位数字转等级
+     * @param number
+     * @return
+     */
+    public static String numberToSeat(Long number) {
+        switch(number.intValue()){
+            case 0:
+                return "商务";
+            case 1:
+                return "一等";
+            default:
+                return "二等";
         }
     }
 
