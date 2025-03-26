@@ -7,14 +7,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -134,8 +132,8 @@ public class ProfileFragment extends Fragment {
         gridLayout.setColumnCount(4); // 设置列数
 
         // 定义图标和文本
-        int[] icons = {R.drawable.order, R.drawable.payment, R.drawable.travel, R.drawable.peopel,
-                R.drawable.order, R.drawable.payment, R.drawable.travel, R.drawable.peopel};
+        int[] icons = {R.drawable.order_24px, R.drawable.payment, R.drawable.travel, R.drawable.peopel,
+                R.drawable.order_24px, R.drawable.payment, R.drawable.travel, R.drawable.peopel};
 
         String[] labels = {
                 "全部订单", "待付款", "未出行", "乘车人",

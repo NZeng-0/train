@@ -96,7 +96,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:scaleType="centerInside"
-                        android:src="@drawable/order" />
+                        android:src="@drawable/order_24px" />
 
                     <TextView
                         android:layout_width="wrap_content"
