@@ -1,5 +1,6 @@
 package com.android.train.utils;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -89,6 +90,29 @@ public class DateUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static Date stringToDate(String str) {
+        try {
+            return new SimpleDateFormat("yyyy-MM-dd",Locale.CHINA).parse(str);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Time stringToHhMm(String str) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm",Locale.CHINA);
+        try {
+            long ms = Objects.requireNonNull(sdf.parse(str)).getTime();
+            return new Time(ms);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Date getNowDateTime() {
+        return new Date();
     }
 }
 

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +26,11 @@ import com.android.train.databinding.FragmentTicketBinding;
 import com.android.train.pojo.Order;
 import com.android.train.utils.DateUtils;
 import com.android.train.utils.PreferencesUtil;
+import com.android.train.utils.To;
 import com.android.train.utils.ToastUtil;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+
+import java.util.Date;
 
 import retrofit2.Retrofit;
 
@@ -36,7 +40,7 @@ public class TicketFragment extends Fragment {
     private FragmentTicketBinding binding;
     private Intent intent;
     private String realName, trainNumber, departureStation, arrivalStation, departureTime,
-            arrivalTime, durationTime, level,carriage,trainSeat, price, seatId;
+            arrivalTime, durationTime, level, carriage, trainSeat, price, seatId, trainId, date;
 
     public static TicketFragment newInstance() {
         return new TicketFragment();
@@ -65,7 +69,7 @@ public class TicketFragment extends Fragment {
             return insets;
         });
 
-        realName = PreferencesUtil.getString(requireContext(),"realName");
+        realName = PreferencesUtil.getString(requireContext(), "realName");
 
         viewModel.getRemainingTime().observe(getViewLifecycleOwner(), binding.tvRemainingTime::setText);
 
@@ -81,6 +85,7 @@ public class TicketFragment extends Fragment {
         carriage = intent.getStringExtra("carriage");
         trainSeat = intent.getStringExtra("trainSeat");
         price = intent.getStringExtra("price");
+        trainId = intent.getStringExtra("trainId");
 
         setupListeners();
         init();
@@ -92,10 +97,10 @@ public class TicketFragment extends Fragment {
         return root;
     }
 
-    private void observeData(){
-        viewModel.getIsTimeout().observe(getViewLifecycleOwner(),timeout->{
-            if(timeout){
-                ToastUtil.showToast(requireContext(),"订单超时请重新提交");
+    private void observeData() {
+        viewModel.getIsTimeout().observe(getViewLifecycleOwner(), timeout -> {
+            if (timeout) {
+                ToastUtil.showToast(requireContext(), "订单超时请重新提交");
                 // 定时超时后返回上一个也没
                 requireActivity().onBackPressed();
             }
@@ -114,13 +119,13 @@ public class TicketFragment extends Fragment {
         binding.tvTicketPrice.setText(String.format("￥%s", price));
         binding.tvTotalPrice.setText(String.format("￥%s", price));
 
-        String date = PreferencesUtil.getString(requireContext(), "selectDate");
+        date = PreferencesUtil.getString(requireContext(), "selectDate");
 
         binding.tvDepartureDate.setText(String.format("发车时间: %s", DateUtils.convertToCN(date)));
     }
 
     private void setupListeners() {
-        binding.btnBack.setOnClickListener(v -> back() );
+        binding.btnBack.setOnClickListener(v -> back());
 
         binding.btnPay.setOnClickListener(v -> {
             ToastUtil.showToast(requireContext(), "开始支付流程");
@@ -133,9 +138,7 @@ public class TicketFragment extends Fragment {
         });
     }
 
-    private void back(){
-        requireActivity().onBackPressed();
-    }
+    private void back() { requireActivity().onBackPressed();}
 
     private void showPaymentBottomSheet() {
         // 创建 BottomSheetDialog
@@ -153,13 +156,13 @@ public class TicketFragment extends Fragment {
         // 处理支付点击事件
         btnWeChatPay.setOnClickListener(v -> {
             ToastUtil.showToast(requireContext(), "微信支付");
-            collectData();
+            collectData(1L);
             bottomSheetDialog.dismiss(); // 关闭弹窗
         });
 
         btnAliPay.setOnClickListener(v -> {
             ToastUtil.showToast(requireContext(), "支付宝支付");
-            collectData();
+            collectData(2L);
             bottomSheetDialog.dismiss();
         });
 
@@ -170,10 +173,28 @@ public class TicketFragment extends Fragment {
         bottomSheetDialog.show();
     }
 
-    private void collectData() {
-        // TODO 创建订单
+    private void collectData(Long pay) {
         String id = PreferencesUtil.getString(requireContext(), "id");
-//        Ticket ticket = new Ticket(realName,0,carriage, trainSeat,id);
-//        System.out.println(ticket);
+        String phone = PreferencesUtil.getString(requireContext(), "phone");
+        Order order = new Order(
+                To.toLong(id),
+                To.toLong(trainId),
+                trainNumber,
+                DateUtils.stringToDate(date),
+                departureStation,
+                arrivalStation,
+                DateUtils.stringToHhMm(departureTime),
+                DateUtils.stringToHhMm(arrivalTime),
+                Long.valueOf(To.seatToNumber(level)),
+                carriage,
+                trainSeat,
+                realName,
+                1L,
+                phone,
+                Long.valueOf(price),
+                pay,
+                DateUtils.getNowDateTime(),
+                1L
+        );
     }
 }

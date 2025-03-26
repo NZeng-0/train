@@ -19,4 +19,24 @@ public class To {
         );
     }
 
+    public static Long toLong(String num) {
+        return Long.valueOf(num) ;
+    }
+
+    /**
+     * 座位等级装数字
+     * @param number
+     * @return
+     */
+    public static String seatToNumber(String number) {
+        switch(number){
+            case "商务":
+                return "0";
+            case "一等":
+                return "1";
+            default:
+                return "2";
+        }
+    }
+
 }

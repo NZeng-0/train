@@ -80,6 +80,7 @@ public class Order {
             String phone,
             Long amount,
             Long payType,
+            Date payTime,
             Long status)
     {
         this.userId = userId;
@@ -98,6 +99,7 @@ public class Order {
         this.phone = phone;
         this.amount = amount;
         this.payType = payType;
+        this.payTime = payTime;
         this.status = status;
     }
 

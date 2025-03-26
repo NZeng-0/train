@@ -12,6 +12,7 @@ import com.android.train.api.service.RelationService;
 import com.android.train.api.AjaxResult;
 import com.android.train.model.SeatInfo;
 import com.android.train.pojo.Seat;
+import com.android.train.utils.To;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -125,7 +126,7 @@ public class BookingViewModel extends ViewModel {
     }
 
     public void getSeatInfo(String id, String type, String number){
-        type = toNumber(type);
+        type = To.seatToNumber(type);
         relationService.getSeatByTrainAndNumber(id, type, number).enqueue(new Callback<>() {
             @Override
             public void onResponse(
@@ -148,16 +149,5 @@ public class BookingViewModel extends ViewModel {
                 Log.e("BookingViewModel", "请求失败：" + t.getMessage());
             }
         });
-    }
-
-    private String toNumber(String number) {
-        switch(number){
-            case "商务":
-                return "0";
-            case "一等":
-                return "1";
-            default:
-                return "2";
-        }
     }
 }

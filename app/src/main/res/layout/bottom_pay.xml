@@ -57,7 +57,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="微信支付"
+            android:text="支付宝支付"
             android:textAlignment="center"
             android:textColor="@color/font_text"
             android:textSize="18sp" />
