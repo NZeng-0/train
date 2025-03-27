@@ -1,13 +1,18 @@
 package com.android.train;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 
+import com.android.train.utils.NotificationUtil;
+import com.android.train.utils.ToastUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -21,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
 
     private NavController navController;
 
+    public static final String POST_NOTIFICATIONS = "android.permission.POST_NOTIFICATIONS";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,18 +35,45 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // 获取NavController
-        navController = Navigation.findNavController(this, R.id.fragment_container);
+        // 初始化导航
+        setupNavigation();
 
-        // 设置AppBarConfiguration，指定哪些Fragment是顶级目标
+        requestNotificationPermission();
+    }
+
+    private void setupNavigation() {
+        navController = Navigation.findNavController(this, R.id.fragment_container);
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home, R.id.navigation_order, R.id.navigation_profile)
                 .build();
-
-        // 将BottomNavigationView与NavController关联
         BottomNavigationView navView = findViewById(R.id.navigation);
         NavigationUI.setupWithNavController(navView, navController);
+    }
 
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{POST_NOTIFICATIONS},
+                        1);
+            }
+        }
+    }
+
+
+    // 处理用户的权限请求结果
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                NotificationUtil.createNotificationChannel(this);
+            } else {
+                ToastUtil.showToast(this, "请开启通知权限");
+            }
+        }
     }
 
     @Override

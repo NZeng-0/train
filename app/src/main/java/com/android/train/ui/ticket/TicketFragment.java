@@ -1,23 +1,17 @@
 package com.android.train.ui.ticket;
 
-import static com.android.train.utils.DateUtils.timeToHhMm;
-
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,12 +25,11 @@ import com.android.train.api.service.RelationService;
 import com.android.train.databinding.FragmentTicketBinding;
 import com.android.train.pojo.Order;
 import com.android.train.utils.DateUtils;
+import com.android.train.utils.NotificationUtil;
 import com.android.train.utils.PreferencesUtil;
 import com.android.train.utils.To;
 import com.android.train.utils.ToastUtil;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-
-import java.util.Date;
 
 import retrofit2.Retrofit;
 
@@ -113,7 +106,7 @@ public class TicketFragment extends Fragment {
 
         viewModel.getSuccess().observe(getViewLifecycleOwner(),success -> {
             if (success) {
-                ToastUtil.showToast(requireContext(),"支付成功");
+                NotificationUtil.sendNotification(requireContext(), 1001, "ticket", "订票成功");
 
                 Intent intent = new Intent(requireActivity(), MainActivity.class);
                 intent.putExtra("nav",2);
@@ -174,13 +167,11 @@ public class TicketFragment extends Fragment {
 
         // 处理支付点击事件
         btnWeChatPay.setOnClickListener(v -> {
-            ToastUtil.showToast(requireContext(), "微信支付");
             collectData(1L);
             bottomSheetDialog.dismiss(); // 关闭弹窗
         });
 
         btnAliPay.setOnClickListener(v -> {
-            ToastUtil.showToast(requireContext(), "支付宝支付");
             collectData(2L);
             bottomSheetDialog.dismiss();
         });
