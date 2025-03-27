@@ -115,8 +115,10 @@ public class TicketFragment extends Fragment {
             if (success) {
                 ToastUtil.showToast(requireContext(),"支付成功");
 
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.navigation);
-                navController.navigate(R.id.navigation_order);
+                Intent intent = new Intent(requireActivity(), MainActivity.class);
+                intent.putExtra("nav",2);
+                startActivity(intent);
+                requireActivity().finishAffinity();
             } else {
                 ToastUtil.showToast(requireContext(),"支付失败，请稍后重试");
                 back();

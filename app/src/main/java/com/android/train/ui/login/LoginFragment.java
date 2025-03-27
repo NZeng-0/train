@@ -19,6 +19,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,8 +116,7 @@ public class LoginFragment extends Fragment {
         });
         authViewModel.getNavigateLiveData().observe(getViewLifecycleOwner(), navigate -> {
             if (navigate) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.navigation);
-                navController.navigate(R.id.navigation_profile);
+                requireActivity().onBackPressed();
             }
         });
         authViewModel.getUserLiveData().observe(getViewLifecycleOwner(), user -> {

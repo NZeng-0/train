@@ -36,7 +36,7 @@ public class AuthRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     AjaxResult<Void> result = response.body();
                     if (result.isSuccess()) {
-                        msgLiveData.postValue("注册成功，正在自动登录...");
+                        msgLiveData.postValue("注册成功，正在登录...");
                         login(userRequest); // 直接调用登录
                     } else {
                         msgLiveData.postValue(result.getMsg());
@@ -61,8 +61,8 @@ public class AuthRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     AjaxResult<String> result = response.body();
                     if (result.isSuccess()) {
-                        getUserInfo();
                         tokenLiveData.postValue(result.getData());
+                        getUserInfo();
                     } else {
                         msgLiveData.postValue("登录失败：" + result.getMsg());
                     }

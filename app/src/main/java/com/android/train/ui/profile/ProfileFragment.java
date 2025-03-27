@@ -58,9 +58,14 @@ public class ProfileFragment extends Fragment {
         initData();
         initServiceList();
 
-        goFragment();
 
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initData();
     }
 
     private void initData() {
@@ -70,6 +75,8 @@ public class ProfileFragment extends Fragment {
 
         username.setText(PreferencesUtil.getString(requireContext(), "username", "未登录"));
         description.setText(PreferencesUtil.getString(requireContext(), "phone", "便捷出行就在12306"));
+
+        goFragment();
     }
 
     private void adapter(View root) {
@@ -108,6 +115,7 @@ public class ProfileFragment extends Fragment {
 
     private void goFragment() {
         boolean isLogin = PreferencesUtil.getBoolean(requireContext(), "isLogin", false);
+
         if (isLogin) {
             avatar.setOnClickListener(v -> toAccount());
             username.setOnClickListener(v -> toAccount());
@@ -123,10 +131,12 @@ public class ProfileFragment extends Fragment {
         Intent intent = new Intent(requireContext(), LoginActivity.class);
         startActivity(intent);
     }
+
     private void toAccount() {
         Intent intent = new Intent(requireContext(), AccountActivity.class);
         startActivity(intent);
     }
+
     private void initServiceList() {
         GridLayout gridLayout = binding.serviceList;
         gridLayout.setColumnCount(4); // 设置列数

@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -142,15 +143,15 @@ public class RegisterFragment extends Fragment {
         authViewModel.getToken().observe(getViewLifecycleOwner(), token -> {
             if (token != null) {
                 // 这里可以存储 Token
-                SharedPreferences sharedPreferences = requireContext()
-                        .getSharedPreferences("app_prefs", MODE_PRIVATE);
-                sharedPreferences.edit().putString("token", token).apply();
+                PreferencesUtil.putString(requireContext(), "token", token);
             }
         });
         authViewModel.getNavigateLiveData().observe(getViewLifecycleOwner(), navigate -> {
             if (navigate) {
-                NavController navController = Navigation.findNavController(requireActivity(), R.id.navigation);
-                navController.navigate(R.id.navigation_profile);
+                Intent intent = new Intent(requireActivity(), MainActivity.class);
+                intent.putExtra("nav",3);
+                startActivity(intent);
+                requireActivity().finishAffinity();
             }
         });
         authViewModel.getUserLiveData().observe(getViewLifecycleOwner(), user -> {

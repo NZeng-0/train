@@ -83,8 +83,9 @@ public class AccountFragment extends Fragment {
         PreferencesUtil.removePreferenceByKey(requireContext(),"phone");
         PreferencesUtil.removePreferenceByKey(requireContext(),"email");
         PreferencesUtil.removePreferenceByKey(requireContext(),"isLogin");
+        PreferencesUtil.removePreferenceByKey(requireContext(),"idCard");
         ToastUtil.showToast(requireContext(), "退出成功");
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.navigation);
-        navController.navigate(R.id.navigation_profile);
+
+        requireActivity().onBackPressed();
     }
 }
