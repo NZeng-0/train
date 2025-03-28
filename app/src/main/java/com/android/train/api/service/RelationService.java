@@ -35,6 +35,14 @@ public interface RelationService {
     @GET("/train/seat/cancel")
     Call<AjaxResult<Void>> cancelSeatTicket(@Query("id") String id);
 
+    @GET("/train/order/exists")
+    Call<AjaxResult<String>> isExists(
+            @Query("userId") String id,
+            @Query("date") String date,
+            @Query("departure") String departure,
+            @Query("arrival") String arrival
+    );
+
     @POST("/train/order")
     Call<AjaxResult<String>> createOrder(@Body Order order);
 

@@ -20,6 +20,7 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Query;
 
 public class BookingViewModel extends ViewModel {
     private final MutableLiveData<String> selectedSeatNumber = new MutableLiveData<>(null);
@@ -37,6 +38,7 @@ public class BookingViewModel extends ViewModel {
     public LiveData<Seat> getSeatLiveData() {
         return seatLiveData;
     }
+
     public LiveData<String> getSelectedSeatNumber() {
         return selectedSeatNumber;
     }
@@ -125,7 +127,7 @@ public class BookingViewModel extends ViewModel {
         return idCard.substring(0, 4) + "*".repeat(length - 7) + idCard.substring(length - 3);
     }
 
-    public void getSeatInfo(String id, String type, String number){
+    public void getSeatInfo(String id, String type, String number) {
         type = To.seatToNumber(type);
         relationService.getSeatByTrainAndNumber(id, type, number).enqueue(new Callback<>() {
             @Override

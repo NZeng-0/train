@@ -3,6 +3,7 @@ package com.android.train.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.train.R;
+import com.android.train.api.AjaxResult;
+import com.android.train.api.RetrofitClient;
+import com.android.train.api.service.RelationService;
 import com.android.train.model.TrainModel;
 import com.android.train.ui.booking.BookingActivity;
 import com.android.train.ui.login.LoginActivity;
@@ -21,6 +25,11 @@ import com.android.train.utils.PreferencesUtil;
 import com.android.train.utils.ToastUtil;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class TrainAdapter extends RecyclerView.Adapter<TrainAdapter.TrainViewHolder> {
 
@@ -65,30 +74,68 @@ public class TrainAdapter extends RecyclerView.Adapter<TrainAdapter.TrainViewHol
             int adapterPosition = holder.getAdapterPosition();
             if (adapterPosition == RecyclerView.NO_POSITION) return;
 
-            Intent intent;
             if (!AuthUtil.isLoggedIn(context)) {
                 ToastUtil.showToast(context, "请先登录");
-                intent = new Intent(context, LoginActivity.class);
-            }
-            else {
-                intent = new Intent(context, BookingActivity.class);
-                intent.putExtra("trainId", train.getId());
-                intent.putExtra("trainNumber", train.getTrainNumber());
-                intent.putExtra("departureStation", train.getDepartureStation());
-                intent.putExtra("arrivalStation", train.getArrivalStation());
-                intent.putExtra("departureTime", train.getDepartureTime());
-                intent.putExtra("arrivalTime", train.getArrivalTime());
-                intent.putExtra("durationTime", train.getDuration());
-                int[] pricesArray = new int[]{
-                        train.getSecondPrice(),
-                        train.getFirstPrice(),
-                        train.getBusinessPrice(),
-                };
-                intent.putExtra("prices", pricesArray);
+                Intent intent = new Intent(context, LoginActivity.class);
+                context.startActivity(intent);
+            } else {
+                // 获取当前用户 id
+                String userId = PreferencesUtil.getString(context, "id");
+
+                String ridingDate = PreferencesUtil.getString(context, "selectDate");
+                String departure = train.getDepartureStation();
+                String arrival = train.getArrivalStation();
+
+                RelationService service = RetrofitClient.getClient(context).create(RelationService.class);
+
+                service.isExists(userId, ridingDate, departure, arrival).enqueue(new Callback<>() {
+                    @Override
+                    public void onResponse(@NonNull Call<AjaxResult<String>> call, @NonNull Response<AjaxResult<String>> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            AjaxResult<String> result = response.body();
+
+                            // 检查响应码是否为 200
+                            if (result.getCode() == 200) {
+                                // 没有冲突，跳转到详情页
+                                Intent intent = toItem(train);
+                                context.startActivity(intent);
+                            } else {
+                                // 存在冲突，显示提示信息
+                                ToastUtil.showToast(context, "您在该日期已有相似行程，请检查");
+                            }
+                        } else {
+                            // 响应失败
+                            ToastUtil.showToast(context, "行程检查失败，请稍后重试");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<AjaxResult<String>> call, @NonNull Throwable t) {
+                        // 网络请求失败
+                        ToastUtil.showToast(context, "网络错误，请检查网络连接");
+                    }
+                });
             }
 
-            context.startActivity(intent);
         });
+    }
+
+    private Intent toItem(TrainModel train) {
+        Intent intent = new Intent(context, BookingActivity.class);
+        intent.putExtra("trainId", train.getId());
+        intent.putExtra("trainNumber", train.getTrainNumber());
+        intent.putExtra("departureStation", train.getDepartureStation());
+        intent.putExtra("arrivalStation", train.getArrivalStation());
+        intent.putExtra("departureTime", train.getDepartureTime());
+        intent.putExtra("arrivalTime", train.getArrivalTime());
+        intent.putExtra("durationTime", train.getDuration());
+        int[] pricesArray = new int[]{
+                train.getSecondPrice(),
+                train.getFirstPrice(),
+                train.getBusinessPrice(),
+        };
+        intent.putExtra("prices", pricesArray);
+        return intent;
     }
 
     public void updateData(List<TrainModel> newData) {

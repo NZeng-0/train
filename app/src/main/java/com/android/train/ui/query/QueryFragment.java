@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ViewSwitcher;
 
+import com.android.train.MainActivity;
 import com.android.train.R;
 import com.android.train.adapter.DateAdapter;
 import com.android.train.adapter.TrainAdapter;
@@ -81,7 +82,11 @@ public class QueryFragment extends Fragment {
 
         // 返回
         Toolbar toolbar = binding.toolbar;
-        toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
+        toolbar.setNavigationOnClickListener(v -> {
+            Intent intent = new Intent(requireActivity(), MainActivity.class);
+            intent.putExtra("nav", 1);
+            requireActivity().startActivity(intent);
+        });
 
         noDataImage = binding.noDataImage;
         viewSwitcher = binding.viewSwitcher;

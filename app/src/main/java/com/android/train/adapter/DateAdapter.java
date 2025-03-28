@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.train.R;
 import com.android.train.model.DateItem;
 import com.android.train.utils.DateUtils;
+import com.android.train.utils.PreferencesUtil;
 import com.android.train.viewmodel.UtilViewModel;
 
 import java.util.List;
@@ -61,7 +62,9 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.ViewHolder> {
                 notifyItemChanged(selectedPosition);
                 selectedPosition = newPosition;
                 notifyItemChanged(selectedPosition);
-                utilViewModel.setSelectedDate(DateUtils.convertToFullDate(dateList.get(selectedPosition).getDate()));
+                String date = DateUtils.convertToFullDate(dateList.get(selectedPosition).getDate());
+                utilViewModel.setSelectedDate(date);
+                PreferencesUtil.putString(context,"selectDate", date);
             }
         });
     }

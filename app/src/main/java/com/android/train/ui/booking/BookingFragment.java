@@ -108,7 +108,10 @@ public class BookingFragment extends Fragment {
                 ToastUtil.showToast(requireContext(), "请选择座位");
                 return;
             }
+
             ToastUtil.showToast(requireContext(), "订单处理中...");
+
+            String id = PreferencesUtil.getString(requireContext(), "id");
 
             viewModel.getSeatInfo(trainId, (String) binding.seatClass.getText(), seat);
         });

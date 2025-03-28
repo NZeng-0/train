@@ -110,8 +110,7 @@ public class HomeFragment extends Fragment {
         });
 
         // 观察日期
-        viewModel.getFormattedDate().observe(getViewLifecycleOwner(), formattedDate ->
-                date.setText(formattedDate));
+        viewModel.getFormattedDate().observe(getViewLifecycleOwner(), formattedDate -> date.setText(formattedDate));
 
         utilViewModel.getDeparture().observe(getViewLifecycleOwner(), city -> {
             PreferencesUtil.putString(requireContext(), "departureCity", city);

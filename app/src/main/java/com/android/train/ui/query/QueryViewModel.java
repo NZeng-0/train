@@ -108,7 +108,7 @@ public class QueryViewModel extends ViewModel {
                     departTime,                 // 出发时间
                     relation.getTrainNumber(),  // 车次号
                     arriveTime,                 // 到达时间
-                    relation.getStartRegion(),  // 出发站
+                    relation.getStartStation(), // 出发站
                     relation.getEndStation(),   // 到达站
                     duration,                   // 行程时长
                     getSeatCount(relation.getSecondSeat()),
