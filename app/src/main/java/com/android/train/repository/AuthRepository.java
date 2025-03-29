@@ -1,5 +1,6 @@
 package com.android.train.repository;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -8,8 +9,10 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.android.train.api.service.UserService;
 import com.android.train.api.AjaxResult;
+import com.android.train.model.ResetPassword;
 import com.android.train.model.UserRequest;
 import com.android.train.pojo.User;
+import com.android.train.utils.ToastUtil;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,7 +27,10 @@ public class AuthRepository {
 
     private final MutableLiveData<Boolean> navigateLiveData = new MutableLiveData<>();
 
-    public AuthRepository(UserService userService) {
+    private final Context context;
+
+    public AuthRepository(Context context, UserService userService) {
+        this.context = context;
         this.userService = userService;
     }
 
@@ -100,6 +106,7 @@ public class AuthRepository {
         });
     }
 
+    // 登出
     public void logout() {
         userService.logout().enqueue(new Callback<>() {
             @Override
@@ -119,6 +126,30 @@ public class AuthRepository {
             @Override
             public void onFailure(@NonNull Call<AjaxResult<String>> call, @NonNull Throwable t) {
                 msgLiveData.postValue("网络错误，请稍后重试");
+            }
+        });
+    }
+
+    // 修改密码
+    public void changePassword(String id, String oldPwd, String newPwd) {
+        userService.changePassword(new ResetPassword(id, oldPwd, newPwd)).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<AjaxResult<String>> call, @NonNull Response<AjaxResult<String>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    AjaxResult<String> result = response.body();
+                    if (result.isSuccess()) {
+                        ToastUtil.showToast(context, "密码修改成功");
+                    } else {
+                        ToastUtil.showToast(context, "旧密码错误，修改失败");
+                    }
+                } else {
+                    ToastUtil.showToast(context, "修改失败, 请稍后重试！");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<AjaxResult<String>> call, @NonNull Throwable t) {
+                ToastUtil.showToast(context, "网络错误，请稍后重试");
             }
         });
     }

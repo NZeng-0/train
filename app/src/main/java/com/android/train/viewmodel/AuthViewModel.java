@@ -17,7 +17,6 @@ public class AuthViewModel extends ViewModel {
     public LiveData<String> getToken() {
         return authRepository.tokenLiveData;
     }
-
     public LiveData<String> getMessage() {
         return authRepository.msgLiveData;
     }
@@ -40,5 +39,9 @@ public class AuthViewModel extends ViewModel {
 
     public void logout() {
         authRepository.logout();
+    }
+
+    public void changePassword(String id, String oldPwd, String newPwd) {
+        authRepository.changePassword(id, oldPwd, newPwd);
     }
 }

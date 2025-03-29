@@ -63,7 +63,7 @@ public class LoginFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         // 创建 Repository
-        AuthRepository authRepository = new AuthRepository(userService);
+        AuthRepository authRepository = new AuthRepository(requireContext(), userService);
 
         // 通过 Factory 创建 ViewModel
         AuthViewModelFactory factory = new AuthViewModelFactory(authRepository);

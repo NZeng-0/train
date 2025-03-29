@@ -60,7 +60,7 @@
                 android:id="@+id/tvUsername"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="znfdezh"
+                android:text="username"
                 android:textColor="#999999"
                 android:textSize="14sp"
                 android:layout_marginTop="4dp"/>
@@ -93,57 +93,6 @@
         android:background="#E0E0E0"
         app:layout_constraintTop_toBottomOf="@id/personal_info_section"/>
 
-    <!-- Student Qualification Section -->
-    <LinearLayout
-        android:id="@+id/student_qualification_section"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        android:background="@android:color/white"
-        app:layout_constraintTop_toBottomOf="@id/divider1">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="学生资质查询"
-                android:textColor="#333333"
-                android:textSize="16sp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="购票优惠，学生专享"
-                android:textColor="#999999"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp"/>
-        </LinearLayout>
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_arrow_right"
-            android:layout_gravity="center_vertical"
-            app:tint="#CCCCCC"/>
-
-    </LinearLayout>
-
-    <View
-        android:id="@+id/divider2"
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:background="#F5F5F5"
-        app:layout_constraintTop_toBottomOf="@id/student_qualification_section"/>
-
     <!-- Phone Number Section -->
     <LinearLayout
         android:id="@+id/phone_section"
@@ -156,7 +105,7 @@
         android:paddingEnd="16dp"
         android:paddingBottom="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider2">
+        app:layout_constraintTop_toBottomOf="@id/divider1">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -172,10 +121,11 @@
                 android:textSize="16sp" />
 
             <TextView
+                android:id="@+id/tvPhone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="(+86) 130****1426"
+                android:text="(+86) 111****111"
                 android:textColor="#999999"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -235,9 +185,10 @@
                 android:textSize="16sp"/>
 
             <TextView
+                android:id="@+id/tvEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="32******66@qq.com"
+                android:text="32******66@com"
                 android:textColor="#999999"
                 android:textSize="14sp"
                 android:layout_marginTop="4dp"/>
@@ -246,8 +197,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="38dp"
-            android:text="已核验"
-            android:textColor="#4CAF50"
+            android:text="未核验"
+            android:textColor="#FF5722"
             android:background="@android:color/transparent"
             android:backgroundTint="@android:color/transparent"
             android:textSize="14sp"
@@ -285,6 +236,7 @@
         app:layout_constraintTop_toBottomOf="@id/divider4">
 
         <LinearLayout
+            android:id="@+id/resetPwd"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

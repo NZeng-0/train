@@ -71,7 +71,7 @@ public class RegisterFragment extends Fragment {
 
         UserService userService = retrofit.create(UserService.class);
         // 创建 Repository
-        AuthRepository authRepository = new AuthRepository(userService);
+        AuthRepository authRepository = new AuthRepository(requireContext(), userService);
         // 通过 Factory 创建 ViewModel
         AuthViewModelFactory factory = new AuthViewModelFactory(authRepository);
         authViewModel = new ViewModelProvider(this, factory).get(AuthViewModel.class);
