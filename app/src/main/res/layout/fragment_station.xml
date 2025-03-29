@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:paddingStart="8dp"
-            android:text="重庆市"
+            android:text="北京市"
             android:textColor="@color/font_text"
             android:textSize="16sp" />
 

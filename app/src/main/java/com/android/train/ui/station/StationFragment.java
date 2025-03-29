@@ -127,12 +127,24 @@ public class StationFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                return false; // 可选：可以在这里做**实时搜索**
+                if(!TextUtils.isEmpty(newText)) {
+                    viewModel.loadStationList();
+                }
+                return false;
             }
         });
 
         Toolbar toolbar = binding.toolbar;
         toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
+
+        binding.searchView.setIconifiedByDefault(false);
+
+//        binding.searchView.setOnQueryTextFocusChangeListener((v, hasFocus) -> {
+//            if (!hasFocus) {
+//                viewModel.loadStationList();
+//            }
+//        });
+
         return root;
     }
 

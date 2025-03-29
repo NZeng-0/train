@@ -16,6 +16,7 @@ import com.android.train.adapter.OrderAdapter;
 import com.android.train.api.RetrofitClient;
 import com.android.train.api.service.RelationService;
 import com.android.train.databinding.FragmentAllOrdersBinding;
+import com.android.train.utils.AuthUtil;
 import com.android.train.utils.NotificationUtil;
 
 import retrofit2.Retrofit;
@@ -71,6 +72,8 @@ public class AllOrdersFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        if(!AuthUtil.isLoggedIn(requireContext()))
+            return;
         if (viewModel != null) {
             viewModel.loadOrderList(-1);
         }

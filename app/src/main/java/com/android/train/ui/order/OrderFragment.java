@@ -1,6 +1,7 @@
 package com.android.train.ui.order;
 
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +26,10 @@ import com.android.train.api.service.RelationService;
 import com.android.train.databinding.FragmentOrderBinding;
 import com.android.train.ui.booking.BookingViewModel;
 import com.android.train.ui.booking.BookingViewModelFactory;
+import com.android.train.ui.login.LoginActivity;
+import com.android.train.utils.AuthUtil;
 import com.android.train.utils.To;
+import com.android.train.utils.ToastUtil;
 import com.google.android.material.tabs.TabLayout;
 
 import retrofit2.Retrofit;
@@ -39,6 +43,12 @@ public class OrderFragment extends Fragment {
 
         binding = FragmentOrderBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        if(!AuthUtil.isLoggedIn(requireContext())) {
+            ToastUtil.showToast(requireContext(), "请先登录!");
+            Intent intent = new Intent(requireContext(), LoginActivity.class);
+            requireActivity().startActivity(intent);
+        }
 
         adapter(root);
         init();
@@ -61,6 +71,8 @@ public class OrderFragment extends Fragment {
     }
 
     private void init(){
+        if(!AuthUtil.isLoggedIn(requireContext()))
+            return;
         ViewPager2 viewPager = binding.viewPager;
         TabLayout tabLayout = binding.tabLayout;
         OrderPagerAdapter pagerAdapter = new OrderPagerAdapter(requireActivity());

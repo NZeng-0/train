@@ -56,11 +56,11 @@ public class ProfileFragment extends Fragment {
 
         initData();
 
-        binding.all.setOnClickListener(v -> {
-           Intent intent = new Intent(requireActivity(), MainActivity.class);
-           intent.putExtra("nav", 2);
-           requireActivity().startActivity(intent);
-        });
+//        binding.all.setOnClickListener(v -> {
+//           Intent intent = new Intent(requireActivity(), MainActivity.class);
+//           intent.putExtra("nav", 2);
+//           requireActivity().startActivity(intent);
+//        });
 
         return root;
     }

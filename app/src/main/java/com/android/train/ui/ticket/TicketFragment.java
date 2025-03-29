@@ -106,7 +106,7 @@ public class TicketFragment extends Fragment {
 
         viewModel.getSuccess().observe(getViewLifecycleOwner(),success -> {
             if (success) {
-                NotificationUtil.sendNotification(requireContext(), 1001, "ticket", "出票成功");
+                NotificationUtil.sendNotification(requireContext(), 1001, "出票成功通知", "您已出票成功");
 
                 Intent intent = new Intent(requireActivity(), MainActivity.class);
                 intent.putExtra("nav",2);
