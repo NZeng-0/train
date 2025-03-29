@@ -210,6 +210,7 @@
         </LinearLayout>
 
         <View
+            android:id="@+id/bt_line"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="10dp"
@@ -217,6 +218,7 @@
             android:background="#eeeeee" />
 
         <LinearLayout
+            android:id="@+id/llOption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -234,6 +236,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1" />
             <TextView
+                android:id="@+id/cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="退票"
@@ -254,4 +257,5 @@
         </LinearLayout>
 
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>

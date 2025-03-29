@@ -47,5 +47,11 @@ public interface RelationService {
     Call<AjaxResult<String>> createOrder(@Body Order order);
 
     @GET("/train/order/my")
-    Call<ApiResponse<List<Order>>> getOrderList(@Query("id") String id);
+    Call<ApiResponse<List<Order>>> getOrderList(
+            @Query("id") String id,
+            @Query("status") int status
+    );
+
+    @GET("/train/order/cancel")
+    Call<AjaxResult<String>> cancelOrder(@Query("id")String id);
 }

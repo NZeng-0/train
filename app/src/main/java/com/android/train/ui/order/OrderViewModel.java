@@ -14,6 +14,7 @@ import com.android.train.api.service.RelationService;
 import com.android.train.pojo.Order;
 import com.android.train.pojo.Relation;
 import com.android.train.pojo.Seat;
+import com.android.train.utils.NotificationUtil;
 import com.android.train.utils.PreferencesUtil;
 
 import java.util.List;
@@ -34,10 +35,9 @@ public class OrderViewModel extends ViewModel {
         this.relationService = relationService;
     }
 
-    public void loadOrderList() {
-        Log.e("OrderViewModel", "ready");
+    public void loadOrderList(int status) {
         String id = PreferencesUtil.getString(context,"id");
-        relationService.getOrderList(id).enqueue(new Callback<>() {
+        relationService.getOrderList(id, status).enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<ApiResponse<List<Order>>> call, @NonNull Response<ApiResponse<List<Order>>> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -55,6 +55,30 @@ public class OrderViewModel extends ViewModel {
             @Override
             public void onFailure(@NonNull Call<ApiResponse<List<Order>>> call, @NonNull Throwable t) {
                 Log.e("OrderViewModel", "获取订单失败"+t);
+            }
+        });
+    }
+
+    public void cancelOrder(String id, int status) {
+        relationService.cancelOrder(id).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<AjaxResult<String>> call, Response<AjaxResult<String>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    AjaxResult<String> apiResponse = response.body();
+                    if (apiResponse.getCode() == 200) {
+                        NotificationUtil.sendNotification(context, 1001, "退票成功通知", "您已退票成功");
+                        loadOrderList(status);
+                    } else {
+                        Log.e("OrderViewModel", "接口返回失败");
+                    }
+                } else {
+                    Log.e("OrderViewModel", "订单取消失败"+response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AjaxResult<String>> call, Throwable t) {
+                Log.e("OrderViewModel", "取消订单失败"+t);
             }
         });
     }

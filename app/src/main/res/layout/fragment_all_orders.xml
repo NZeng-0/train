@@ -5,14 +5,57 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewStations"
+    <android.widget.ViewSwitcher
+        android:id="@+id/view_switcher"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewStations"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:padding="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- 404 图片 -->
+        <LinearLayout
+            android:id="@+id/no_data_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/no_data_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="No Data"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:src="@drawable/no_list" />
+
+            <TextView
+                android:id="@+id/no_data_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="暂无数据"
+                android:textColor="#666666"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </android.widget.ViewSwitcher>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

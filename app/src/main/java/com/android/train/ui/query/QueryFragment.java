@@ -43,7 +43,6 @@ public class QueryFragment extends Fragment {
     private QueryViewModel viewModel;
     private FragmentQueryBinding binding;
     private TrainAdapter trainAdapter;
-    private ImageView noDataImage;
     private ViewSwitcher viewSwitcher;
     private RecyclerView trainListView;
     private UtilViewModel utilViewModel;
@@ -88,7 +87,6 @@ public class QueryFragment extends Fragment {
             requireActivity().startActivity(intent);
         });
 
-        noDataImage = binding.noDataImage;
         viewSwitcher = binding.viewSwitcher;
         trainListView = binding.trainList;
 
@@ -111,20 +109,21 @@ public class QueryFragment extends Fragment {
             binding.swipeRefresh.setRefreshing(false);
         });
 
+        binding.title.setText(String.format("%s -> %s", start, end));
+
         observe();
 
         return root;
     }
 
     private void observe() {
-
         viewModel.getTrainModels().observe(getViewLifecycleOwner(), models -> {
             // 获取当前显示的 View
             View currentView = viewSwitcher.getCurrentView();
 
             if (models.isEmpty()) {
                 // 当前显示的不是 "无数据" 图片时，切换到 "无数据"
-                if (currentView.getId() != R.id.no_data_image) {
+                if (currentView.getId() != R.id.no_data_layout) {
                     viewSwitcher.setDisplayedChild(1); // 切换到 noDataImage
                 }
             } else {

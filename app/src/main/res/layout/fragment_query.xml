@@ -19,6 +19,7 @@
         app:navigationIcon="@drawable/back">
 
         <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -69,15 +70,33 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <!-- 404 图片 -->
-        <ImageView
-            android:id="@+id/no_data_image"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:src="@drawable/not_found"
-            android:layout_gravity="center"
-            android:contentDescription="No Data"
-            android:visibility="gone"/>
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_marginTop="30dp"
+            android:id="@+id/no_data_layout">
+
+            <ImageView
+                android:id="@+id/no_data_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:src="@drawable/no_list"
+                android:contentDescription="No Data" />
+
+            <TextView
+                android:id="@+id/no_data_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="暂无数据"
+                android:textSize="16sp"
+                android:textColor="#666666"
+                android:layout_marginTop="8dp"/>
+        </LinearLayout>
+
     </android.widget.ViewSwitcher>
 </androidx.constraintlayout.widget.ConstraintLayout>

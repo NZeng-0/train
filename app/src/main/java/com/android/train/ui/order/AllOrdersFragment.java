@@ -11,20 +11,13 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.android.train.R;
 import com.android.train.adapter.OrderAdapter;
-import com.android.train.api.AjaxResult;
 import com.android.train.api.RetrofitClient;
 import com.android.train.api.service.RelationService;
 import com.android.train.databinding.FragmentAllOrdersBinding;
-import com.android.train.pojo.Order;
-import com.android.train.ui.booking.BookingViewModel;
-import com.android.train.utils.PreferencesUtil;
+import com.android.train.utils.NotificationUtil;
 
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class AllOrdersFragment extends Fragment {
@@ -43,6 +36,11 @@ public class AllOrdersFragment extends Fragment {
         OrderViewModelFactory factory = new OrderViewModelFactory(requireContext(), relationService);
         viewModel = new ViewModelProvider(this, factory).get(OrderViewModel.class);
 
+        binding.swipeRefresh.setOnRefreshListener(() -> {
+            viewModel.loadOrderList(-1);
+            binding.swipeRefresh.setRefreshing(false);
+        });
+
         observe();
 
         return binding.getRoot();
@@ -50,9 +48,23 @@ public class AllOrdersFragment extends Fragment {
 
     private void observe() {
         viewModel.getOrderList().observe(getViewLifecycleOwner(), list -> {
-            OrderAdapter adapter = new OrderAdapter(list);
-            binding.recyclerViewStations.setAdapter(adapter);
-            binding.recyclerViewStations.setLayoutManager(new LinearLayoutManager(getContext()));
+            OrderAdapter adapter = new OrderAdapter(list, id -> viewModel.cancelOrder(id, -1));
+
+            View currentView = binding.viewSwitcher.getCurrentView();
+
+            if (list.isEmpty()) {
+                // 当前显示的不是 "无数据" 图片时，切换到 "无数据"
+                if (currentView.getId() != R.id.no_data_image) {
+                    binding.viewSwitcher.setDisplayedChild(1); // 切换到 noDataImage
+                }
+            } else {
+                // 当前显示的不是 "列表" 时，切换到 "列表"
+                if (currentView.getId() != R.id.swipe_refresh) {
+                    binding.viewSwitcher.setDisplayedChild(0); // 切换到 RecyclerView
+                }
+                binding.recyclerViewStations.setAdapter(adapter);
+                binding.recyclerViewStations.setLayoutManager(new LinearLayoutManager(getContext()));
+            }
         });
     }
 
@@ -60,7 +72,7 @@ public class AllOrdersFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (viewModel != null) {
-            viewModel.loadOrderList();
+            viewModel.loadOrderList(-1);
         }
     }
 
