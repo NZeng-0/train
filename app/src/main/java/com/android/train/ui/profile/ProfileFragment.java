@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.train.MainActivity;
 import com.android.train.R;
 import com.android.train.databinding.FragmentProfileBinding;
 import com.android.train.ui.account.AccountActivity;
@@ -35,8 +36,6 @@ import eightbitlab.com.blurview.BlurView;
 
 public class ProfileFragment extends Fragment {
 
-    private LinearLayout header_layout;
-    private ProfileViewModel mViewModel;
     private FragmentProfileBinding binding;
     private ImageView avatar;
     private TextView username, description;
@@ -52,12 +51,16 @@ public class ProfileFragment extends Fragment {
             @Nullable Bundle savedInstanceState) {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        header_layout = binding.headerLayout;
+
         adapter(root);
 
         initData();
-        initServiceList();
 
+        binding.all.setOnClickListener(v -> {
+           Intent intent = new Intent(requireActivity(), MainActivity.class);
+           intent.putExtra("nav", 2);
+           requireActivity().startActivity(intent);
+        });
 
         return root;
     }
@@ -135,56 +138,6 @@ public class ProfileFragment extends Fragment {
     private void toAccount() {
         Intent intent = new Intent(requireContext(), AccountActivity.class);
         startActivity(intent);
-    }
-
-    private void initServiceList() {
-        GridLayout gridLayout = binding.serviceList;
-        gridLayout.setColumnCount(4); // 设置列数
-
-        // 定义图标和文本
-        int[] icons = {R.drawable.order_24px, R.drawable.payment, R.drawable.travel, R.drawable.peopel,
-                R.drawable.order_24px, R.drawable.payment, R.drawable.travel, R.drawable.peopel};
-
-        String[] labels = {
-                "全部订单", "待付款", "未出行", "乘车人",
-                "全部订单", "待付款", "未出行", "乘车人"
-        };
-
-        int itemCount = icons.length; // 项目总数
-
-        for (int i = 0; i < itemCount; i++) {
-            // 创建 LinearLayout
-            LinearLayout itemLayout = new LinearLayout(getContext());
-            itemLayout.setOrientation(LinearLayout.VERTICAL);
-            itemLayout.setGravity(Gravity.CENTER);
-            GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-            params.width = 0;
-            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            params.setMargins(To.dpToPx(requireContext(), 5), To.dpToPx(requireContext(), 5), To.dpToPx(requireContext(), 5), To.dpToPx(requireContext(), 5));
-            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f); // 设置权重填充
-            itemLayout.setLayoutParams(params);
-
-            // 创建 ImageView
-            ImageView imageView = new ImageView(getContext());
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(To.dpToPx(requireContext(), 32), To.dpToPx(requireContext(), 32)));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            imageView.setImageResource(icons[i]);
-
-            // 创建 TextView
-            TextView textView = new TextView(getContext());
-            textView.setText(labels[i]);
-            textView.setTextSize(12);
-            textView.setTextColor(getResources().getColor(R.color.font_label));
-            textView.setGravity(Gravity.CENTER);
-
-            // 添加子视图到 LinearLayout
-            itemLayout.addView(imageView);
-            itemLayout.addView(textView);
-
-            // 添加 LinearLayout 到 GridLayout
-            gridLayout.addView(itemLayout);
-        }
-
     }
 
     @Override
