@@ -12,7 +12,7 @@ import javax.net.ssl.*;
 import java.security.cert.X509Certificate;
 
 public class RetrofitClient {
-    private static final String BASE_URL = "https://frp-off.com:40417";
+    private static final String BASE_URL = "http://192.168.205.22:8080";
     private static Retrofit retrofit;
 
     public static Retrofit getClient(Context context) {
